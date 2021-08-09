@@ -19,9 +19,6 @@
     <Filter Include="Resource Files\Textures">
       <UniqueIdentifier>{fc456a46-2150-4913-9d03-bc824483ee85}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource Files\Models">
-      <UniqueIdentifier>{b7dbde15-dc09-4e1c-b33b-97c913f0b2fc}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad.c">
@@ -57,27 +54,27 @@
     <ClCompile Include="Model.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ModelObj.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="light.frag">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="light.vert">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="bunny_scene.gltf">
-      <Filter>Resource Files\Models</Filter>
-    </None>
-    <None Include="texture.vert">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="texture.frag">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
     <None Include="model.vert">
       <Filter>Resource Files\Shaders</Filter>
     </None>
     <None Include="model.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="image.vert">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="image.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="point.vert">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="point.frag">
       <Filter>Resource Files\Shaders</Filter>
     </None>
   </ItemGroup>
@@ -106,7 +103,16 @@
     <ClInclude Include="Mesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Model.h">
+    <ClInclude Include="tiny_obj_loader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelObj.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelGltf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="globals.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

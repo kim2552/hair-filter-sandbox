@@ -57,7 +57,7 @@ vec4 pointLight()
 vec4 direcLight()
 {
 	// ambient lighting
-	float ambient = 0.20f;
+	float ambient = 0.80f;
 
 	// diffuse lighting
 	vec3 normal = normalize(Normal);
@@ -71,7 +71,7 @@ vec4 direcLight()
 	float specAmount = pow(max(dot(viewDirection, reflectionDirection), 0.0f), 16);
 	float specular = specAmount * specularLight;
 
-	return (texture(diffuse0, texCoord) * (diffuse + ambient) + texture(specular0, texCoord).r * specular) * lightColor;
+	return (texture(diffuse0, texCoord) * (diffuse + ambient) + texture(specular0, texCoord).r * specular) * lightColor * vec4(color, 1.0f);
 }
 
 vec4 spotLight()

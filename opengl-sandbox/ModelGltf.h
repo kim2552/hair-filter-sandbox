@@ -1,5 +1,5 @@
-#ifndef MODEL_CLASS_H
-#define MODEL_CLASS_H
+#ifndef MODEL_GLTF_CLASS_H
+#define MODEL_GLTF_CLASS_H
 
 #include<json/json.hpp>
 #include"Mesh.h"
@@ -7,11 +7,11 @@
 using json = nlohmann::json;
 
 
-class Model
+class ModelGltf
 {
 public:
 	// Loads in a model from a file and stores tha information in 'data', 'JSON', and 'file'
-	Model(const char* file);
+	ModelGltf(const char* file);
 
 	void Draw(Shader& shader, Camera& camera);
 

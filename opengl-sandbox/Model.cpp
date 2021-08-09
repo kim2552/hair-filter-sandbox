@@ -1,20 +1,20 @@
-#include"Model.h"
+#include"ModelGltf.h"
 
-Model::Model(const char* file)
+ModelGltf::ModelGltf(const char* file)
 {
 	// Make a JSON object
 	std::string text = get_file_contents(file);
 	JSON = json::parse(text);
 
 	// Get the binary data
-	Model::file = file;
+	ModelGltf::file = file;
 	data = getData();
 
 	// Traverse all nodes
 	traverseNode(0);
 }
 
-void Model::Draw(Shader& shader, Camera& camera)
+void ModelGltf::Draw(Shader& shader, Camera& camera)
 {
 	// Go over all meshes and draw each one
 	for (unsigned int i = 0; i < meshes.size(); i++)
@@ -23,7 +23,7 @@ void Model::Draw(Shader& shader, Camera& camera)
 	}
 }
 
-void Model::loadMesh(unsigned int indMesh)
+void ModelGltf::loadMesh(unsigned int indMesh)
 {
 	// Get all accessor indices
 	unsigned int posAccInd = JSON["meshes"][indMesh]["primitives"][0]["attributes"]["POSITION"];
@@ -48,7 +48,7 @@ void Model::loadMesh(unsigned int indMesh)
 	meshes.push_back(Mesh(vertices, indices, textures));
 }
 
-void Model::traverseNode(unsigned int nextNode, glm::mat4 matrix)
+void ModelGltf::traverseNode(unsigned int nextNode, glm::mat4 matrix)
 {
 	// Current node
 	json node = JSON["nodes"][nextNode];
@@ -126,7 +126,7 @@ void Model::traverseNode(unsigned int nextNode, glm::mat4 matrix)
 	}
 }
 
-std::vector<unsigned char> Model::getData()
+std::vector<unsigned char> ModelGltf::getData()
 {
 	// Create a place to store the raw text, and get the uri of the .bin file
 	std::string bytesText;
@@ -142,7 +142,7 @@ std::vector<unsigned char> Model::getData()
 	return data;
 }
 
-std::vector<float> Model::getFloats(json accessor)
+std::vector<float> ModelGltf::getFloats(json accessor)
 {
 	std::vector<float> floatVec;
 
@@ -178,7 +178,7 @@ std::vector<float> Model::getFloats(json accessor)
 	return floatVec;
 }
 
-std::vector<GLuint> Model::getIndices(json accessor)
+std::vector<GLuint> ModelGltf::getIndices(json accessor)
 {
 	std::vector<GLuint> indices;
 
@@ -228,7 +228,7 @@ std::vector<GLuint> Model::getIndices(json accessor)
 	return indices;
 }
 
-std::vector<Texture> Model::getTextures()
+std::vector<Texture> ModelGltf::getTextures()
 {
 	std::vector<Texture> textures;
 
@@ -278,7 +278,7 @@ std::vector<Texture> Model::getTextures()
 	return textures;
 }
 
-std::vector<Vertex> Model::assembleVertices
+std::vector<Vertex> ModelGltf::assembleVertices
 (
 	std::vector<glm::vec3> positions,
 	std::vector<glm::vec3> normals,
@@ -302,7 +302,7 @@ std::vector<Vertex> Model::assembleVertices
 	return vertices;
 }
 
-std::vector<glm::vec2> Model::groupFloatsVec2(std::vector<float> floatVec)
+std::vector<glm::vec2> ModelGltf::groupFloatsVec2(std::vector<float> floatVec)
 {
 	std::vector<glm::vec2> vectors;
 	for (int i = 0; i < floatVec.size(); i)
@@ -311,7 +311,7 @@ std::vector<glm::vec2> Model::groupFloatsVec2(std::vector<float> floatVec)
 	}
 	return vectors;
 }
-std::vector<glm::vec3> Model::groupFloatsVec3(std::vector<float> floatVec)
+std::vector<glm::vec3> ModelGltf::groupFloatsVec3(std::vector<float> floatVec)
 {
 	std::vector<glm::vec3> vectors;
 	for (int i = 0; i < floatVec.size(); i)
@@ -320,7 +320,7 @@ std::vector<glm::vec3> Model::groupFloatsVec3(std::vector<float> floatVec)
 	}
 	return vectors;
 }
-std::vector<glm::vec4> Model::groupFloatsVec4(std::vector<float> floatVec)
+std::vector<glm::vec4> ModelGltf::groupFloatsVec4(std::vector<float> floatVec)
 {
 	std::vector<glm::vec4> vectors;
 	for (int i = 0; i < floatVec.size(); i)
