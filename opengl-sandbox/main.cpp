@@ -1,11 +1,14 @@
 #include"ModelGltf.h"
 #include"ModelObj.h"
+#include"FaceDetect.h"
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "tiny_obj_loader.h"
 
 const unsigned int width = 600;
 const unsigned int height = 800;
+
+const float imageHeightScale = float(width) / float(height);
 
 // Vertices coordinates
 Vertex imgVerts[] =
@@ -42,6 +45,13 @@ GLuint pointInds[] =
 
 int main()
 {
+	// Stores the width, height, and the number of color channels of the image
+	int fwidthImg, fheightImg, fnumColCh;
+	// Reads the image from a file and stores it in bytes
+	unsigned char* fbytes = stbi_load("assets/image/testside.jpg", &fwidthImg, &fheightImg, &fnumColCh, 0);
+	FaceDetect fdetect = FaceDetect();
+	fdetect.getFaceLandmarks(fbytes, fwidthImg, fheightImg);
+
 	// Initialize GLFW
 	glfwInit();
 
@@ -79,6 +89,7 @@ int main()
 	Shader shaderProgramObj("model.vert", "model.frag");
 	Shader shaderProgramImg("image.vert", "image.frag");
 	Shader shaderProgramPoint("point.vert", "point.frag");
+	Shader shaderProgramFace("image.vert", "image.frag");
 
 
 
@@ -93,8 +104,8 @@ int main()
 	{
 		Texture("assets/image/face.jpg", "diffuse", 0)
 	};
-	for (size_t i = 0; i < sizeof(imgVerts); i++) {		// Width stays as 1.0 to 1.0, Height needs to change based on aspect ratio
-		imgVerts[i].position.y *= 3.0f / 4.0f;
+	for (size_t i = 0; i < sizeof(imgVerts); i++) {		// Width stays as 1.0, Height needs to change based on aspect ratio
+		imgVerts[i].position.y *= imageHeightScale;
 	}
 	// Store mesh data in vectors for the mesh
 	std::vector <Vertex> iVerts(imgVerts, imgVerts + sizeof(imgVerts) / sizeof(Vertex));
@@ -102,8 +113,6 @@ int main()
 	std::vector <Texture> iTex(imgText, imgText + sizeof(imgText) / sizeof(Texture));
 	// Create image mesh
 	Mesh imgMesh(iVerts, iInds, iTex);
-
-
 
 	// Hair Texture data
 	Texture hairText[]
@@ -114,8 +123,6 @@ int main()
 
 	std::string filename = "assets/hair/hair_bob.obj";
 	ModelObj hairBob(filename, hairTex);
-
-
 
 	// Point Texture data
 	Texture pointText[]
@@ -164,7 +171,7 @@ int main()
 
 	// Activate shader for Object and configure the model matrix
 	shaderProgramObj.Activate();
-	glm::vec3 hairObjectPos = glm::vec3(0.0f, -0.2300347222222f, 0.0f);									//TODO::Translate object to fit face landmarks
+	glm::vec3 hairObjectPos = glm::vec3(0.0f, 0.0f, -1.0f);									//TODO::Translate object to fit face landmarks
 	glm::mat4 hairObjectModel = glm::mat4(1.0f);
 	hairObjectModel = glm::translate(hairObjectModel, hairObjectPos);
 	hairObjectModel = glm::scale(hairObjectModel, glm::vec3(1.0f / 21.0f, 1.0f / 21.0f, 1.0f / 21.0f));	//TODO::Scale object to fit face
@@ -221,11 +228,14 @@ int main()
 
 		imgMesh.Draw(shaderProgramImg, camera, imgModel);		// Draw the image
 
+		glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+		//TODO::Insert "invisible" face mesh here
+		glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+
 		if (selected == 1) {			// Current selected input controls is Object
 			hairBob.Inputs(window, width, height);
 			hairBob.UpdateModel(hairObjectModel);
 		}
-
 		hairBob.Draw(shaderProgramObj, camera);					// Draw the object
 
 		pointMesh.Draw(shaderProgramPoint, camera, pointModel);	// Draw the points

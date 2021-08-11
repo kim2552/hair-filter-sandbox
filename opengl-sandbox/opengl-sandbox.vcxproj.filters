@@ -57,6 +57,9 @@
     <ClCompile Include="ModelObj.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="FaceDetect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="model.vert">
@@ -113,6 +116,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="globals.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FaceDetect.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
