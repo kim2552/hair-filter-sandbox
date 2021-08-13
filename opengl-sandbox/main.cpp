@@ -1,6 +1,7 @@
 #include"ModelGltf.h"
 #include"ModelObj.h"
 #include"FaceDetect.h"
+#include"FaceMesh.h"
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "tiny_obj_loader.h"
@@ -42,15 +43,125 @@ GLuint pointInds[] =
 	0, 2, 3
 };
 
+// Vertices coordinates for face
+GLuint faceInds[] =
+{
+	0, 17, 36,
+	0, 1, 36,
+	1, 41, 36,
+	1, 31, 41,
+	1, 2, 31,
+	2, 3, 31,
+	3, 4, 31,
+	4, 48, 31,
+	4, 5, 48,
+	5, 60, 48,
+	5, 6, 60,
+	6, 59, 60,
+	6, 7, 59,
+	7, 58, 59,
+	7, 57, 58,
+	7, 8, 57,
+	8, 56, 57,
+	8, 9, 56,
+	9, 55, 56,
+	9, 10, 55,
+	10, 64, 55,
+	10, 54, 64,
+	10, 11, 54,
+	11, 12, 54,
+	11, 12, 54,
+	13, 54, 12,
+	13, 35, 54,
+	13, 14, 35,
+	14, 15, 35,
+	15, 46, 35,
+	15, 45, 46,
+	15, 16, 45,
+	16, 26, 45,
+	26, 25, 45,
+	25, 24, 45,
+	24, 44, 45,
+	24, 23, 44,
+	23, 43, 44,
+	23, 22, 43,
+	22, 42, 43,
+	22, 27, 42,
+	27, 21, 39,
+	21, 38, 39,
+	21, 20, 38,
+	20, 19, 38,
+	19, 37, 38,
+	19, 18, 37,
+	18, 36, 37,
+	18, 17, 36,
+	36, 37, 41,
+	37, 41, 40,
+	37, 40, 38,
+	38, 40, 39,
+	42, 47, 43,
+	47, 46, 43,
+	43, 46, 44,
+	44, 46, 45,
+	27, 39, 28,
+	39, 40, 28,
+	40, 28, 29,
+	41, 40, 29,
+	41, 30, 29,
+	41, 30, 31,
+	27, 42, 28,
+	28, 47, 42,
+	28, 29, 47,
+	29, 46, 47,
+	29, 30, 46,
+	30, 35, 46,
+	30, 31, 32,
+	30, 32, 33,
+	30, 33, 34,
+	30, 34, 35,
+	31, 48, 60,
+	31, 60, 49,
+	31, 49, 32,
+	32, 49, 50,
+	32, 50, 33,
+	33, 50, 51,
+	33, 51, 52,
+	33, 52, 34,
+	34, 52, 35,
+	35, 52, 53,
+	35, 53, 64,
+	35, 64, 54,
+	60, 49, 59,
+	49, 59, 67,
+	49, 67, 61,
+	49, 61, 50,
+	50, 61, 51,
+	51, 61, 62,
+	51, 62, 63,
+	51, 63, 52,
+	52, 63, 53,
+	61, 67, 62,
+	59, 67, 58,
+	67, 58, 66,
+	58, 66, 57,
+	67, 62, 66,
+	66, 65, 62,
+	62, 65, 63,
+	63, 65, 53,
+	66, 57, 65,
+	65, 57, 56,
+	65, 56, 55,
+	53, 65, 55,
+	53, 55, 64,
+};
 
 int main()
 {
-	// Stores the width, height, and the number of color channels of the image
-	int fwidthImg, fheightImg, fnumColCh;
-	// Reads the image from a file and stores it in bytes
-	unsigned char* fbytes = stbi_load("assets/image/testside.jpg", &fwidthImg, &fheightImg, &fnumColCh, 0);
+	// Initialize face mesh object
+	FaceMesh fmesh = FaceMesh();
+
+	// Initialize face detect object
 	FaceDetect fdetect = FaceDetect();
-	fdetect.getFaceLandmarks(fbytes, fwidthImg, fheightImg);
 
 	// Initialize GLFW
 	glfwInit();
@@ -89,6 +200,7 @@ int main()
 	Shader shaderProgramObj("model.vert", "model.frag");
 	Shader shaderProgramImg("image.vert", "image.frag");
 	Shader shaderProgramPoint("point.vert", "point.frag");
+	Shader shaderProgramFaceMask("point.vert", "point.frag");
 	Shader shaderProgramFace("image.vert", "image.frag");
 
 
@@ -98,14 +210,46 @@ int main()
 	glm::vec3 lightPos = glm::vec3(0.5f, 0.5f, 0.5f);
 
 
+	// Stores the width, height, and the number of color channels of the image
+	int widthImg, heightImg, numColCh;
+	// Flips the image so it appears right side up
+	//stbi_set_flip_vertically_on_load(true);
+	// Reads the image from a file and stores it in bytes
+	unsigned char* imgBytes = stbi_load("assets/image/face2.jpg", &widthImg, &heightImg, &numColCh, 0);	//TODO::Replace this with live camera feed images
+
+	std::vector<std::vector<cv::Point2f>> faces;
+	faces = fdetect.getFaceLandmarks(imgBytes, widthImg, heightImg);	// Get facial landmarks in the image
+
+	//TODO::Create vertices from the face landmarks
+	Texture faceText[]
+	{
+		Texture("assets/colors/red.png", "diffuse", 0)
+	};
+	std::vector<Mesh> facesMesh;					// Each face has it's own mesh
+
+	for (size_t i = 0; i < faces.size(); i++)
+	{
+		Vertex faceVertex[68];
+		for (size_t j = 0; j < faces[i].size(); j++)
+		{
+			//TODO::Convert this face to vertex
+			faceVertex[j]= Vertex{ glm::vec3((float)faces[i][j].x* imageHeightScale /(float)460.0f, ((float)faces[i][j].y/(460.0f* (float)height / (float)width)),  0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f) };
+		}
+		// Store mesh data in vectors for the mesh
+		std::vector <Vertex> pVerts(faceVertex, faceVertex + sizeof(faceVertex) / sizeof(Vertex));
+		std::vector <GLuint> pInds(faceInds, faceInds + sizeof(faceInds) / sizeof(GLuint));
+		std::vector <Texture> pTex(faceText, faceText + sizeof(faceText) / sizeof(Texture));
+		// Create and store face mesh
+		facesMesh.push_back(Mesh(pVerts, pInds, pTex));
+	}
 
 	// Image texture data
-	Texture imgText[]	//TODO::Replace this with live camera feed images
+	Texture imgText[]
 	{
-		Texture("assets/image/face.jpg", "diffuse", 0)
+		Texture(imgBytes, "diffuse", 0, widthImg, heightImg, numColCh)
 	};
 	for (size_t i = 0; i < sizeof(imgVerts); i++) {		// Width stays as 1.0, Height needs to change based on aspect ratio
-		imgVerts[i].position.y *= imageHeightScale;
+		imgVerts[i].position.x *= imageHeightScale;
 	}
 	// Store mesh data in vectors for the mesh
 	std::vector <Vertex> iVerts(imgVerts, imgVerts + sizeof(imgVerts) / sizeof(Vertex));
@@ -142,7 +286,7 @@ int main()
 	shaderProgramImg.Activate();
 	glm::mat4 imgModel = glm::mat4(1.0f);
 	imgModel = glm::scale(imgModel, glm::vec3(1.0f, 1.0f, 1.0f));
-	imgModel = glm::rotate(imgModel, glm::radians(-90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	imgModel = glm::rotate(imgModel, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	imgModel = glm::rotate(imgModel, glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));	// Flip the image
 	glUniformMatrix4fv(glGetUniformLocation(shaderProgramImg.ID, "model"), 1, GL_FALSE, glm::value_ptr(imgModel));
 
@@ -169,6 +313,15 @@ int main()
 	std::cout << "z=" << maxVertexMat[3].z << std::endl;
 #endif
 
+	// Activate shader for Face Mask and configure the model matrix
+	shaderProgramFaceMask.Activate();
+	glm::vec3 facemaskPos = glm::vec3(1.0f*imageHeightScale, -1.0f, -0.1f);			//TODO::Create points to represent facial landmarks
+	glm::mat4 facemaskModel = glm::mat4(1.0f);
+	facemaskModel = glm::translate(facemaskModel, facemaskPos);
+	facemaskModel = glm::scale(facemaskModel, glm::vec3(2.0f, 2.0f, 2.0f));
+	facemaskModel = glm::rotate(facemaskModel, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(glGetUniformLocation(shaderProgramFaceMask.ID, "model"), 1, GL_FALSE, glm::value_ptr(facemaskModel));
+
 	// Activate shader for Object and configure the model matrix
 	shaderProgramObj.Activate();
 	glm::vec3 hairObjectPos = glm::vec3(0.0f, 0.0f, -1.0f);									//TODO::Translate object to fit face landmarks
@@ -181,13 +334,13 @@ int main()
 	glUniform3f(glGetUniformLocation(shaderProgramObj.ID, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
 	hairBob.UpdateModel(hairObjectModel);																// Update object model
 
-	// Activate shader for Point and configure the model matrix
-	shaderProgramPoint.Activate();											//TODO::Width and Height matches that of image?
-	glm::vec3 pointPos = glm::vec3(0.0f, -0.2300347222222, 0.0f);			//TODO::Create points to represent facial landmarks
-	glm::mat4 pointModel = glm::mat4(1.0f);
-	pointModel = glm::translate(pointModel, pointPos);
-	pointModel = glm::scale(pointModel, glm::vec3(1.0f / 200.0f, 1.0f / 200.0f, 1.0f / 200.0f));		// Points scaled down
-	glUniformMatrix4fv(glGetUniformLocation(shaderProgramPoint.ID, "model"), 1, GL_FALSE, glm::value_ptr(pointModel));
+	//// Activate shader for Point and configure the model matrix
+	//shaderProgramPoint.Activate();											//TODO::Width and Height matches that of image?
+	//glm::vec3 pointPos = glm::vec3(0.0f, -0.2300347222222, 0.0f);			//TODO::Create points to represent facial landmarks
+	//glm::mat4 pointModel = glm::mat4(1.0f);
+	//pointModel = glm::translate(pointModel, pointPos);
+	//pointModel = glm::scale(pointModel, glm::vec3(1.0f / 200.0f, 1.0f / 200.0f, 1.0f / 200.0f));		// Points scaled down
+	//glUniformMatrix4fv(glGetUniformLocation(shaderProgramPoint.ID, "model"), 1, GL_FALSE, glm::value_ptr(pointModel));
 
 
 
@@ -228,17 +381,24 @@ int main()
 
 		imgMesh.Draw(shaderProgramImg, camera, imgModel);		// Draw the image
 
-		glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
-		//TODO::Insert "invisible" face mesh here
-		glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+		//for (size_t i = 0; i < facesMesh.size(); i++)
+		//{
+		//	facesMesh[i].Draw(shaderProgramFaceMask, camera, facemaskModel);
+		//}
+		//glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+		for (size_t i = 0; i < facesMesh.size(); i++)
+		{
+			facesMesh[i].Draw(shaderProgramFaceMask, camera, facemaskModel);
+		}
+		//glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 
 		if (selected == 1) {			// Current selected input controls is Object
 			hairBob.Inputs(window, width, height);
 			hairBob.UpdateModel(hairObjectModel);
 		}
-		hairBob.Draw(shaderProgramObj, camera);					// Draw the object
+		//hairBob.Draw(shaderProgramObj, camera);					// Draw the object
 
-		pointMesh.Draw(shaderProgramPoint, camera, pointModel);	// Draw the points
+		//pointMesh.Draw(shaderProgramPoint, camera, pointModel);	// Draw the points
 
 		// Swap the back buffer with the front buffer
 		glfwSwapBuffers(window);

@@ -13,7 +13,7 @@ class FaceDetect
 public:
 	FaceDetect();
 
-	void getFaceLandmarks(unsigned char* image, int width, int height);
+	std::vector<std::vector<cv::Point2f>> getFaceLandmarks(unsigned char* image, int width, int height);
 
 	cv::CascadeClassifier face_cascade;
 	cv::Ptr<cv::face::Facemark> facemark;

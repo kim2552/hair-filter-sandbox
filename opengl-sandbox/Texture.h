@@ -16,6 +16,8 @@ public:
 
 	Texture(const char* image, const char* texType, GLuint slot);
 
+	Texture(unsigned char* bytes, const char* texType, GLuint slot, int widthImg, int heightImg, int numColCh);
+
 	// Assigns a texture unit to a texture
 	void texUnit(Shader& shader, const char* uniform, GLuint unit);
 	// Binds a texture
@@ -24,5 +26,8 @@ public:
 	void Unbind();
 	// Deletes a texture
 	void Delete();
+
+private:
+	void configureTexture(unsigned char* bytes, const char* texType, GLuint slot, int widthImg, int heightImg, int numColCh);
 };
 #endif
