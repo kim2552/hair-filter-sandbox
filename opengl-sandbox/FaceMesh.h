@@ -15,6 +15,8 @@
 #include "eos/render/texture_extraction.hpp"
 #include "eos/cpp17/optional.hpp"
 
+#include "globals.h"
+
 struct FaceMeshObj{
 	eos::core::Mesh mesh;
 	float yaw;

@@ -29,21 +29,24 @@ std::vector<std::vector<cv::Point2f>> FaceDetect::getFaceLandmarks(unsigned char
 
 	std::vector<std::vector<cv::Point2f>> shapes;
 	if (faces.size() > 0) {
+#if ENABLE_DEBUG
+		if (facemark->fit(imageMat, faces, shapes))
+		{
+			for (size_t i = 0; i < faces.size(); i++)
+			{
+				cv::rectangle(imageMat, faces[i], cv::Scalar(255, 0, 0));
+			}
+			for (unsigned long i = 0; i < faces.size(); i++) {
+				for (unsigned long k = 0; k < shapes[i].size(); k++)
+					cv::circle(imageMat, shapes[i][k], 5, cv::Scalar(0, 0, 255), cv::FILLED);
+			}
+			//cv::namedWindow("Detected_shape");
+			//cv::imshow("Detected_shape", imageMat);
+			//cv::waitKey(0);
+		}
+#else
 		facemark->fit(imageMat, faces, shapes);
-		//if (facemark->fit(imageMat, faces, shapes))	//TODO::transfer shapes coordinates to openGL!
-		//{
-		//	for (size_t i = 0; i < faces.size(); i++)
-		//	{
-		//		cv::rectangle(imageMat, faces[i], cv::Scalar(255, 0, 0));
-		//	}
-		//	for (unsigned long i = 0; i < faces.size(); i++) {
-		//		for (unsigned long k = 0; k < shapes[i].size(); k++)
-		//			cv::circle(imageMat, shapes[i][k], 5, cv::Scalar(0, 0, 255), cv::FILLED);
-		//	}
-		//	cv::namedWindow("Detected_shape");
-		//	cv::imshow("Detected_shape", imageMat);
-		//	cv::waitKey(0);
-		//}
+#endif
 	}
 	return shapes;
 }

@@ -9,6 +9,8 @@
 #include <iostream>
 #include <cerrno>
 
+#include "globals.h"
+
 std::string get_file_contents(const char* filename);
 
 class Shader

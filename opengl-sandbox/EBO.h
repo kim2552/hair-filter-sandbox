@@ -5,6 +5,8 @@
 #include<glad/glad.h>
 #include<vector>
 
+#include "globals.h"
+
 class EBO
 {
 public:

@@ -24,11 +24,13 @@ ModelObj::ModelObj(std::string file, std::vector<Texture> textures)
 	auto& materials = reader.GetMaterials();
 
 #if ENABLE_DEBUG
+	printf("-----------Model Object attributes-----------\n");
 	printf("# of vertices  = %d\n", (int)(attrib.vertices.size()) / 3);
 	printf("# of normals   = %d\n", (int)(attrib.normals.size()) / 3);
 	printf("# of texcoords = %d\n", (int)(attrib.texcoords.size()) / 2);
 	printf("# of materials = %d\n", (int)materials.size());
 	printf("# of shapes    = %d\n", (int)shapes.size());
+	printf("--------------------------------------------\n");
 #endif
 
 	// Loop over shapes
@@ -60,7 +62,7 @@ ModelObj::ModelObj(std::string file, std::vector<Texture> textures)
 				if (vy < min_vert_y) { min_vert_y = vy; }
 				if (vz > max_vert_z) { max_vert_z = vz; }
 				if (vz < min_vert_z) { min_vert_z = vz; }
-#endif //ENABLE_DEBUG
+#endif
 
 				// Check if `normal_index` is zero or positive. negative = no normal data
 				glm::vec3 normal = { 0.0f, 0.0f, 0.0f };
@@ -105,7 +107,9 @@ ModelObj::ModelObj(std::string file, std::vector<Texture> textures)
 	}
 
 #if ENABLE_DEBUG
+	printf("--------------Object Bounding Box-------------------\n");
 	printf("max_x=%f, min_x=%f, max_y=%f, min_y=%f, max_z=%f, min_z=%f\n", max_vert_x, min_vert_x, max_vert_y, min_vert_y, max_vert_z, min_vert_z);
+	printf("----------------------------------------------------\n");
 #endif
 }
 
@@ -124,7 +128,8 @@ void ModelObj::UpdateModel(glm::mat4 model)
 	view = glm::lookAt(Position, Position + Orientation, Up);
 	model = model * view;
 	modelMat = model;
-#if ENABLE_DEBUG
+
+#if ENABLE_DEBUG	//TODO::This has to reflect the transformations made to the actual model
 	glm::mat4 minVertexMat = glm::mat4(1.0f);
 	minVertexMat = glm::scale(minVertexMat, glm::vec3(1.0f / 21.0f, 1.0f / 21.0f, 1.0f / 21.0f));
 	glm::vec3 minVertexPos = glm::vec3(min_vert_x, min_vert_y, min_vert_z);

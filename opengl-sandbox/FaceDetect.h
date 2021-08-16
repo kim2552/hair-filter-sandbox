@@ -8,6 +8,8 @@
 #include "opencv2/videoio.hpp"
 #include <opencv2/face/facemark.hpp>
 
+#include "globals.h"
+
 class FaceDetect
 {
 public:
