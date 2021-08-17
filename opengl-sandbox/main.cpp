@@ -191,7 +191,7 @@ int main()
 	//stbi_set_flip_vertically_on_load(true);
 
 	// Reads the image from a file and stores it in bytes
-	unsigned char* imgBytes = stbi_load("assets/image/testside2.jpg", &widthImg, &heightImg, &numColCh, 0);	//TODO::Replace this with live camera feed images
+	unsigned char* imgBytes = stbi_load("assets/image/face3.jpg", &widthImg, &heightImg, &numColCh, 0);	//TODO::Replace this with live camera feed images
 
 	float imageAspectRatio = (float)widthImg / (float)heightImg;
 	
@@ -210,12 +210,16 @@ int main()
 	{
 		Texture("assets/colors/red.png", "diffuse", 0)
 	};
+
+	float sideLength = glm::tan(glm::radians(22.5f)) * 1.0f;
+	float faceMaskScaledLength = 2.0f - (2.0f * sideLength);
+
 	for (size_t i = 0; i < faces.size(); i++)							// Loop through all the faces
 	{
 		Vertex faceVertex[68];
 		for (size_t j = 0; j < faces[i].size(); j++)					// Loop through landmarks in face
 		{
-			faceVertex[j]= Vertex{ glm::vec3((float)faces[i][j].x* imageAspectRatio /(float)460.0f, ((float)faces[i][j].y/(460.0f* (float)height / (float)width)),  0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f) };
+			faceVertex[j]= Vertex{ glm::vec3((float)faces[i][j].x * imageAspectRatio /(float)RESIZED_IMAGE_WIDTH, (float)faces[i][j].y/(float)RESIZED_IMAGE_HEIGHT,  0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f) };
 		}
 		// Store mesh data in vectors for the mesh
 		std::vector <Vertex> fVerts(faceVertex, faceVertex + sizeof(faceVertex) / sizeof(Vertex));
@@ -227,24 +231,22 @@ int main()
 
 	// Activate shader for Face Mask and configure the model matrix
 	shaderProgramFaceMask.Activate();
-	glm::vec3 facemaskPos = glm::vec3(1.0f * imageAspectRatio, -1.0f, -0.1f);			//TODO::Create points to represent facial landmarks
 	glm::mat4 facemaskModel = glm::mat4(1.0f);
-	facemaskModel = glm::translate(facemaskModel, facemaskPos);
-	facemaskModel = glm::scale(facemaskModel, glm::vec3(2.0f, 2.0f, 2.0f));
-	//facemaskModel = glm::rotate(facemaskModel, glm::radians(180.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	facemaskModel = glm::scale(facemaskModel, glm::vec3(faceMaskScaledLength, faceMaskScaledLength, faceMaskScaledLength));
+	facemaskModel = glm::translate(facemaskModel, glm::vec3(0.375f, -0.5f, -0.875f));
 	facemaskModel = glm::rotate(facemaskModel, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(glGetUniformLocation(shaderProgramFaceMask.ID, "model"), 1, GL_FALSE, glm::value_ptr(facemaskModel));
 
 	/****************************************************/
 
 	/*********************Face Mesh Object*******************************/
-
+#if ENABLE_FACE_MESH
 	//Initialize face mesh object
 	FaceMesh fmesh = FaceMesh();		// TODO:: Create face meshes for all faces
 	eos::core::LandmarkCollection<Eigen::Vector2f> landmarkCollection = fmesh.processLandmarks(faces[0]);
 	std::vector<Mesh> facesobjMesh;									// Each face has it's own mesh
 
-	FaceMeshObj faceMeshObj = fmesh.getFaceMeshObj(landmarkCollection, widthImg, heightImg);
+	FaceMeshObj faceMeshObj = fmesh.getFaceMeshObj(landmarkCollection, RESIZED_IMAGE_WIDTH, RESIZED_IMAGE_HEIGHT);
 
 	Texture facemeshText[]
 	{
@@ -253,7 +255,7 @@ int main()
 	std::vector<Vertex> facemeshVerts;
 	for (size_t i = 0; i < faceMeshObj.mesh.vertices.size(); i++)
 	{
-		facemeshVerts.push_back(Vertex{ glm::vec3(faceMeshObj.mesh.vertices[i](0)/(float)460.0f, faceMeshObj.mesh.vertices[i](1)/ (460.0f * (float)height / (float)width), faceMeshObj.mesh.vertices[i](2) / (float)heightImg), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(faceMeshObj.mesh.texcoords[i](0), faceMeshObj.mesh.texcoords[i](1)) });
+		facemeshVerts.push_back(Vertex{ glm::vec3(faceMeshObj.mesh.vertices[i](0) / (float)RESIZED_IMAGE_WIDTH, faceMeshObj.mesh.vertices[i](1) / (float)RESIZED_IMAGE_HEIGHT, faceMeshObj.mesh.vertices[i](2) / (float)RESIZED_IMAGE_HEIGHT), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(faceMeshObj.mesh.texcoords[i](0), faceMeshObj.mesh.texcoords[i](1)) });
 	}
 	std::vector<GLuint> fInds;
 	for (size_t i = 0; i < faceMeshObj.mesh.tvi.size(); i++)
@@ -269,14 +271,16 @@ int main()
 
 	// Activate shader for Face Mesh and configure the model matrix
 	shaderProgramFaceMesh.Activate();
-	glm::vec3 facemeshPos = glm::vec3(1.0f * imageAspectRatio, -1.0f, -0.1f);			//TODO::Create points to represent facial landmarks
+	glm::vec3 facemeshPos = glm::vec3(0.0f, 0.3f, -0.5f);			//TODO::Create points to represent facial landmarks
 	glm::mat4 facemeshModel = glm::mat4(1.0f);
 	facemeshModel = glm::translate(facemeshModel, facemeshPos);
-	facemeshModel = glm::scale(facemeshModel, glm::vec3(2.0f, 2.0f, 2.0f));
-	//facemeshModel = glm::rotate(facemeshModel, glm::radians(180.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	facemeshModel = glm::scale(facemeshModel, glm::vec3(3.0f, 3.0f/imageAspectRatio, 3.0f));
+	facemeshModel = glm::rotate(facemeshModel, glm::radians(180.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 	facemeshModel = glm::rotate(facemeshModel, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-	glUniformMatrix4fv(glGetUniformLocation(shaderProgramFaceMesh.ID, "model"), 1, GL_FALSE, glm::value_ptr(facemeshModel));
 
+	facemeshModel = glm::rotate(facemeshModel, glm::radians(faceMeshObj.pitch), glm::vec3(1.0f, 0.0f, 0.0f));
+	glUniformMatrix4fv(glGetUniformLocation(shaderProgramFaceMesh.ID, "model"), 1, GL_FALSE, glm::value_ptr(facemeshModel));
+#endif	//ENABLE_FACE_MESH
 	/******************************************************************/
 
 	/**************************Image Texture***********************/
@@ -286,7 +290,7 @@ int main()
 	{
 		Texture(imgBytes, "diffuse", 0, widthImg, heightImg, numColCh)						// Texture object deletes imgBytes afterwards
 	};
-	for (size_t i = 0; i < sizeof(imgVerts); i++) {		// Width stays as 1.0, Height needs to change based on aspect ratio
+	for (size_t i = 0; i < sizeof(imgVerts); i++) {		// Height stays as 2.0, Width needs to change based on aspect ratio
 		imgVerts[i].position.x *= imageAspectRatio;
 	}
 	// Store mesh data in vectors for the mesh
@@ -299,7 +303,6 @@ int main()
 	// Activate shader for Image and configure the model matrix
 	shaderProgramImg.Activate();
 	glm::mat4 imgModel = glm::mat4(1.0f);
-	imgModel = glm::scale(imgModel, glm::vec3(1.0f, 1.0f, 1.0f));
 	imgModel = glm::rotate(imgModel, glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));	// Flip the image
 	imgModel = glm::rotate(imgModel, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));	// Flip the image
 	glUniformMatrix4fv(glGetUniformLocation(shaderProgramImg.ID, "model"), 1, GL_FALSE, glm::value_ptr(imgModel));
@@ -319,7 +322,7 @@ int main()
 
 	// Activate shader for Object and configure the model matrix
 	shaderProgramObj.Activate();
-	glm::vec3 hairObjectPos = glm::vec3(0.0f, 0.0f, -1.0f);									//TODO::Translate object to fit face landmarks
+	glm::vec3 hairObjectPos = glm::vec3(0.0f, 0.15f, -0.5f);									//TODO::Translate object to fit face landmarks
 	glm::mat4 hairObjectModel = glm::mat4(1.0f);
 	hairObjectModel = glm::translate(hairObjectModel, hairObjectPos);
 	hairObjectModel = glm::scale(hairObjectModel, glm::vec3(1.0f / 21.0f, 1.0f / 21.0f, 1.0f / 21.0f));	//TODO::Scale object to fit face
@@ -371,18 +374,19 @@ int main()
 		}
 
 		imgMesh.Draw(shaderProgramImg, camera, imgModel);		// Draw the image
-
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		//glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 		for (size_t i = 0; i < facesdetectMesh.size(); i++)
 		{
 			facesdetectMesh[i].Draw(shaderProgramFaceMask, camera, facemaskModel);
 		}
-
+#if ENABLE_FACE_MESH
 		for (size_t i = 0; i < facesobjMesh.size(); i++)
 		{
 			facesobjMesh[i].Draw(shaderProgramFaceMesh, camera, facemeshModel);
 		}
-		//glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
-		//TODO::Insert facesdetectMesh and facesobjMesh
+#endif
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		//glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 
 		//if (selected == 1) {			// Current selected input controls is Object

@@ -13,9 +13,7 @@ std::vector<std::vector<cv::Point2f>> FaceDetect::getFaceLandmarks(unsigned char
 {
 	cv::Mat imageMat = cv::Mat(height, width, CV_8UC3, image);
 
-	float aspect_ratio = (float)height / (float)width;
-
-	cv::resize(imageMat, imageMat, cv::Size(460, (int)(460*aspect_ratio)), 0, 0, cv::INTER_LINEAR_EXACT);
+	cv::resize(imageMat, imageMat, cv::Size(RESIZED_IMAGE_WIDTH, RESIZED_IMAGE_HEIGHT), 0, 0, cv::INTER_LINEAR_EXACT);
 	cv::Mat gray;
 	std::vector<cv::Rect> faces;
 	if (imageMat.channels() > 1) {

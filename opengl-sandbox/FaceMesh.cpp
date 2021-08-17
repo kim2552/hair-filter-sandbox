@@ -27,18 +27,18 @@ FaceMesh::FaceMesh()
 }
 
 /* Process facial landmarks and store them in a LandmarkCollection object*/
-eos::core::LandmarkCollection<Eigen::Vector2f> FaceMesh::processLandmarks(std::vector<cv::Point2f> faceLandmarks)
+eos::core::LandmarkCollection<Eigen::Vector2f> FaceMesh::processLandmarks(std::vector<cv::Point2f> face)
 {
 	eos::core::LandmarkCollection<Eigen::Vector2f> landmarks;
 	landmarks.reserve(68);
 
 	int ibugId = 1;
-	for (size_t i = 0; i < faceLandmarks.size(); i++) {
+	for (size_t i = 0; i < face.size(); i++) {
 		eos::core::Landmark<Eigen::Vector2f> landmark;
 
 		landmark.name = std::to_string(ibugId);
-		landmark.coordinates[0] = faceLandmarks[i].x;
-		landmark.coordinates[1] = faceLandmarks[i].y;	//TODO::Might have to shift by 1.0f
+		landmark.coordinates[0] = face[i].x;
+		landmark.coordinates[1] = face[i].y;	//TODO::Might have to shift by 1.0f
 		landmarks.emplace_back(landmark);
 		++ibugId;
 	}
@@ -60,6 +60,14 @@ FaceMeshObj FaceMesh::getFaceMeshObj(eos::core::LandmarkCollection<Eigen::Vector
 	meshObj.yaw = glm::degrees(glm::yaw(rendering_params.get_rotation()));
 	meshObj.pitch = glm::degrees(glm::pitch(rendering_params.get_rotation()));
 	meshObj.roll = glm::degrees(glm::roll(rendering_params.get_rotation()));
+
+#if ENABLE_DEBUG
+	printf("-------------Face Mesh Object Properties------------\n");
+	printf("yaw=%f\n", meshObj.yaw);
+	printf("pitch=%f\n", meshObj.pitch);
+	printf("roll=%f\n", meshObj.roll);
+	printf("----------------------------------------------------");
+#endif
 
 	return meshObj;
 }

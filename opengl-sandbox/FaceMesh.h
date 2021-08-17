@@ -15,6 +15,7 @@
 #include "eos/render/texture_extraction.hpp"
 #include "eos/cpp17/optional.hpp"
 
+#include "Mesh.h"
 #include "globals.h"
 
 struct FaceMeshObj{
@@ -38,7 +39,7 @@ public:
 
 	FaceMesh();
 
-	eos::core::LandmarkCollection<Eigen::Vector2f> processLandmarks(std::vector<cv::Point2f> faceLandmarks);
+	eos::core::LandmarkCollection<Eigen::Vector2f> processLandmarks(std::vector<cv::Point2f> face);
 
 	FaceMeshObj getFaceMeshObj(eos::core::LandmarkCollection<Eigen::Vector2f> landmarks, int imgWidth, int imgHeight);
 
