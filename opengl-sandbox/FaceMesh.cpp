@@ -51,15 +51,14 @@ FaceMeshObj FaceMesh::getFaceMeshObj(eos::core::LandmarkCollection<Eigen::Vector
 	FaceMeshObj meshObj;
 
 	// Fit the model, get back a mesh and the pose:
-	eos::fitting::RenderingParameters rendering_params;
-	std::tie(meshObj.mesh, rendering_params) = eos::fitting::fit_shape_and_pose(
+	std::tie(meshObj.mesh, meshObj.rendering_parameters) = eos::fitting::fit_shape_and_pose(
 		morphable_model_with_expressions, landmarks, landmark_mapper, imgWidth, imgHeight, edge_topology,
 		ibug_contour, model_contour, 5, eos::cpp17::nullopt, 30.0f);
 
 	// The 3D head pose can be recovered as follows:
-	meshObj.yaw = glm::degrees(glm::yaw(rendering_params.get_rotation()));
-	meshObj.pitch = glm::degrees(glm::pitch(rendering_params.get_rotation()));
-	meshObj.roll = glm::degrees(glm::roll(rendering_params.get_rotation()));
+	meshObj.yaw = glm::degrees(glm::yaw(meshObj.rendering_parameters.get_rotation()));
+	meshObj.pitch = glm::degrees(glm::pitch(meshObj.rendering_parameters.get_rotation()));
+	meshObj.roll = glm::degrees(glm::roll(meshObj.rendering_parameters.get_rotation()));
 
 #if ENABLE_DEBUG
 	printf("-------------Face Mesh Object Properties------------\n");

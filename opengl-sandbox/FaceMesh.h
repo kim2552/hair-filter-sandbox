@@ -23,6 +23,7 @@ struct FaceMeshObj{
 	float yaw;
 	float pitch;
 	float roll;
+	eos::fitting::RenderingParameters rendering_parameters;
 };
 
 class FaceMesh
