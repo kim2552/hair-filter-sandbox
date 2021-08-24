@@ -65,7 +65,7 @@ FaceMeshObj FaceMesh::getFaceMeshObj(eos::core::LandmarkCollection<Eigen::Vector
 	printf("yaw=%f\n", meshObj.yaw);
 	printf("pitch=%f\n", meshObj.pitch);
 	printf("roll=%f\n", meshObj.roll);
-	printf("----------------------------------------------------");
+	printf("----------------------------------------------------\n");
 #endif
 
 	return meshObj;

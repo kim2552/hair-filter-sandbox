@@ -1,331 +1,147 @@
-#include"ModelGltf.h"
+#include "Model.h"
 
-ModelGltf::ModelGltf(const char* file)
+Model::Model(std::vector<Mesh> m, int winWidth, int winHeight)
 {
-	// Make a JSON object
-	std::string text = get_file_contents(file);
-	JSON = json::parse(text);
-
-	// Get the binary data
-	ModelGltf::file = file;
-	data = getData();
-
-	// Traverse all nodes
-	traverseNode(0);
+	meshes = m;
+	windowWidth = winWidth;
+	windowHeight = winHeight;
 }
 
-void ModelGltf::Draw(Shader& shader, Camera& camera)
+void Model::Draw(Shader& shader, Camera& camera)
 {
-	// Go over all meshes and draw each one
-	for (unsigned int i = 0; i < meshes.size(); i++)
-	{
-		meshes[i].Mesh::Draw(shader, camera, matricesMeshes[i]);
+	for (size_t i = 0; i < meshes.size(); i++) {
+		meshes[i].Draw(shader, camera, modelMat);
 	}
 }
 
-void ModelGltf::loadMesh(unsigned int indMesh)
+void Model::UpdateModel(glm::mat4 model)
 {
-	// Get all accessor indices
-	unsigned int posAccInd = JSON["meshes"][indMesh]["primitives"][0]["attributes"]["POSITION"];
-	unsigned int normalAccInd = JSON["meshes"][indMesh]["primitives"][0]["attributes"]["NORMAL"];
-	unsigned int texAccInd = JSON["meshes"][indMesh]["primitives"][0]["attributes"]["TEXCOORD_0"];
-	unsigned int indAccInd = JSON["meshes"][indMesh]["primitives"][0]["indices"];
+	modelMat = model;			// Update the modelMat
 
-	// Use accessor indices to get all vertices components
-	std::vector<float> posVec = getFloats(JSON["accessors"][posAccInd]);
-	std::vector<glm::vec3> positions = groupFloatsVec3(posVec);
-	std::vector<float> normalVec = getFloats(JSON["accessors"][normalAccInd]);
-	std::vector<glm::vec3> normals = groupFloatsVec3(normalVec);
-	std::vector<float> texVec = getFloats(JSON["accessors"][texAccInd]);
-	std::vector<glm::vec2> texUVs = groupFloatsVec2(texVec);
+	glm::vec4 vertexPoint = glm::vec4(meshes[0].vertices[0].position, 1.0f);
+	fixedVertex = modelMat * vertexPoint;
 
-	// Combine all the vertex components and also get the indices and textures
-	std::vector<Vertex> vertices = assembleVertices(positions, normals, texUVs);
-	std::vector<GLuint> indices = getIndices(JSON["accessors"][indAccInd]);
-	std::vector<Texture> textures = getTextures();
+	glm::vec4 vmin = modelMat * glm::vec4(originalBb.min,1.0f);
+	bb.min = glm::vec3(vmin.x, vmin.y, vmin.z);
+	glm::vec4 vmax = modelMat * glm::vec4(originalBb.max, 1.0f);
+	bb.max = glm::vec3(vmax.x, vmax.y, vmax.z);
 
-	// Combine the vertices, indices, and textures into a mesh
-	meshes.push_back(Mesh(vertices, indices, textures));
+	modelWidth = abs(bb.max.x - bb.min.x);
+	modelHeight = abs(bb.max.y - bb.min.y);
+
+	position = modelMat * glm::vec4(originalPosition,1.0f);
+
+	printf("--------Model Properties-----------\n");
+	printf("topHeadCoord={%f,%f,%f}\n", topHeadCoord.x, topHeadCoord.y, topHeadCoord.z);
+	printf("faceWidth=%f\n", faceWidth);
+	printf("faceHeight=%f\n", faceHeight);
+	printf("yaw,pitch,roll={%f,%f,%f}\n", yaw, pitch, roll);
+	printf("minimum: {%f, %f, %f}\n", bb.min.x, bb.min.y, bb.min.z);
+	printf("maximum: {%f, %f, %f}\n", bb.max.x, bb.max.y, bb.max.z);
+	printf("model width: %f\n", modelWidth);
+	printf("model height: %f\n", modelHeight);
+	printf("original model width: %f\n", glm::length(originalBb.max.x - originalBb.min.x));
+	printf("original model height: %f\n", glm::length(originalBb.max.y - originalBb.min.y));
+	printf("scaledValueWidth: %f\n", sqrt(model[0][0] * model[0][0] + model[0][1] * model[0][1] + model[0][2] * model[0][2]));
+	printf("scaledValueHeight: %f\n", sqrt(model[1][0] * model[1][0] + model[1][1] * model[1][1] + model[1][2] * model[1][2]));
+	//printf("goldenRatioWidth: %f\n", );
+	//printf("goldenRatioHeight: %f\n", );
+	printf("position: {%f, %f, %f}\n", position.x, position.y, position.z);
+	printf("ratio object to face width: %f\n", modelWidth / faceWidth);
+	printf("ratio object to face height: %f\n", modelHeight / faceHeight);
+	printf("position distance from topHeadCoord={%f,%f,%f}\n", position.x - topHeadCoord.x, position.y - topHeadCoord.y, position.z - topHeadCoord.z);
+	printf("fixedVertex distance from topHeadCoord={%f,%f,%f}\n", fixedVertex.x - topHeadCoord.x, fixedVertex.y - topHeadCoord.y, fixedVertex.z - topHeadCoord.z);
+	printf("-------------------------------\n");
+
 }
 
-void ModelGltf::traverseNode(unsigned int nextNode, glm::mat4 matrix)
+void Model::Inputs(GLFWwindow* window, int width, int height, glm::mat4& model)
 {
-	// Current node
-	json node = JSON["nodes"][nextNode];
-
-	// Get translation if it exists
-	glm::vec3 translation = glm::vec3(0.0f, 0.0f, 0.0f);
-	if (node.find("translation") != node.end())
+	// Handles key inputs
+	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
 	{
-		float transValues[3];
-		for (unsigned int i = 0; i < node["translation"].size(); i++)
-			transValues[i] = (node["translation"][i]);
-		translation = glm::make_vec3(transValues);
+		glm::mat4 translation = glm::translate(glm::mat4(1.f), glm::vec3(0.0f, -0.01f, 0.0f));
+		model = translation * model;
 	}
-	// Get quaternion if it exists
-	glm::quat rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
-	if (node.find("rotation") != node.end())
+	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
 	{
-		float rotValues[4] =
-		{
-			node["rotation"][3],
-			node["rotation"][0],
-			node["rotation"][1],
-			node["rotation"][2]
-		};
-		rotation = glm::make_quat(rotValues);
+		glm::mat4 translation = glm::translate(glm::mat4(1.f), glm::vec3(0.01f, 0.0f, 0.0f));
+		model = translation * model;
 	}
-	// Get scale if it exists
-	glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
-	if (node.find("scale") != node.end())
+	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
 	{
-		float scaleValues[3];
-		for (unsigned int i = 0; i < node["scale"].size(); i++)
-			scaleValues[i] = (node["scale"][i]);
-		scale = glm::make_vec3(scaleValues);
+		glm::mat4 translation = glm::translate(glm::mat4(1.f), glm::vec3(0.0f, 0.01f, 0.0f));
+		model = translation * model;
 	}
-	// Get matrix if it exists
-	glm::mat4 matNode = glm::mat4(1.0f);
-	if (node.find("matrix") != node.end())
+	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
 	{
-		float matValues[16];
-		for (unsigned int i = 0; i < node["matrix"].size(); i++)
-			matValues[i] = (node["matrix"][i]);
-		matNode = glm::make_mat4(matValues);
+		glm::mat4 translation = glm::translate(glm::mat4(1.f), glm::vec3(-0.01f, 0.0f, 0.0f));
+		model = translation * model;
 	}
-
-	// Initialize matrices
-	glm::mat4 trans = glm::mat4(1.0f);
-	glm::mat4 rot = glm::mat4(1.0f);
-	glm::mat4 sca = glm::mat4(1.0f);
-
-	// Use translation, rotation, and scale to change the initialized matrices
-	trans = glm::translate(trans, translation);
-	rot = glm::mat4_cast(rotation);
-	sca = glm::scale(sca, scale);
-
-	// Multiply all matrices together
-	glm::mat4 matNextNode = matrix * matNode * trans * rot * sca;
-
-	// Check if the node contains a mesh and if it does load it
-	if (node.find("mesh") != node.end())
+	if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS)
 	{
-		translationsMeshes.push_back(translation);
-		rotationsMeshes.push_back(rotation);
-		scalesMeshes.push_back(scale);
-		matricesMeshes.push_back(matNextNode);
-
-		loadMesh(node["mesh"]);
+		glm::mat4 translation = glm::translate(glm::mat4(1.f), glm::vec3(0.0f, 0.0f, 0.01f));
+		model = translation * model;
 	}
-
-	// Check if the node has children, and if it does, apply this function to them with the matNextNode
-	if (node.find("children") != node.end())
+	if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS)
 	{
-		for (unsigned int i = 0; i < node["children"].size(); i++)
-			traverseNode(node["children"][i], matNextNode);
+		glm::mat4 translation = glm::translate(glm::mat4(1.f), glm::vec3(0.0f, 0.0f, -0.01f));
+		model = translation * model;
 	}
-}
-
-std::vector<unsigned char> ModelGltf::getData()
-{
-	// Create a place to store the raw text, and get the uri of the .bin file
-	std::string bytesText;
-	std::string uri = JSON["buffers"][0]["uri"];
-
-	// Store raw text data into bytesText
-	std::string fileStr = std::string(file);
-	std::string fileDirectory = fileStr.substr(0, fileStr.find_last_of('/') + 1);
-	bytesText = get_file_contents((fileDirectory + uri).c_str());
-
-	// Transform the raw text data into bytes and put them in a vector
-	std::vector<unsigned char> data(bytesText.begin(), bytesText.end());
-	return data;
-}
-
-std::vector<float> ModelGltf::getFloats(json accessor)
-{
-	std::vector<float> floatVec;
-
-	// Get properties from the accessor
-	unsigned int buffViewInd = accessor.value("bufferView", 1);
-	unsigned int count = accessor["count"];
-	unsigned int accByteOffset = accessor.value("byteOffset", 0);
-	std::string type = accessor["type"];
-
-	// Get properties from the bufferView
-	json bufferView = JSON["bufferViews"][buffViewInd];
-	unsigned int byteOffset = bufferView["byteOffset"];
-
-	// Interpret the type and store it into numPerVert
-	unsigned int numPerVert;
-	if (type == "SCALAR") numPerVert = 1;
-	else if (type == "VEC2") numPerVert = 2;
-	else if (type == "VEC3") numPerVert = 3;
-	else if (type == "VEC4") numPerVert = 4;
-	else throw std::invalid_argument("Type is invalid (not SCALAR, VEC2, VEC3, or VEC4)");
-
-	// Go over all the bytes in the data at the correct place using the properties from above
-	unsigned int beginningOfData = byteOffset + accByteOffset;
-	unsigned int lengthOfData = count * 4 * numPerVert;
-	for (unsigned int i = beginningOfData; i < beginningOfData + lengthOfData; i)
+	if (glfwGetKey(window, GLFW_KEY_V) == GLFW_PRESS)
 	{
-		unsigned char bytes[] = { data[i++], data[i++], data[i++], data[i++] };
-		float value;
-		std::memcpy(&value, bytes, sizeof(float));
-		floatVec.push_back(value);
+		model = glm::scale(model, glm::vec3(0.95f, 0.95f, 0.95f));
 	}
-
-	return floatVec;
-}
-
-std::vector<GLuint> ModelGltf::getIndices(json accessor)
-{
-	std::vector<GLuint> indices;
-
-	// Get properties from the accessor
-	unsigned int buffViewInd = accessor.value("bufferView", 0);
-	unsigned int count = accessor["count"];
-	unsigned int accByteOffset = accessor.value("byteOffset", 0);
-	unsigned int componentType = accessor["componentType"];
-
-	// Get properties from the bufferView
-	json bufferView = JSON["bufferViews"][buffViewInd];
-	unsigned int byteOffset = bufferView["byteOffset"];
-
-	// Get indices with regards to their type: unsigned int, unsigned short, or short
-	unsigned int beginningOfData = byteOffset + accByteOffset;
-	if (componentType == 5125)
+	if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS)
 	{
-		for (unsigned int i = beginningOfData; i < byteOffset + accByteOffset + count * 4; i)
-		{
-			unsigned char bytes[] = { data[i++], data[i++], data[i++], data[i++] };
-			unsigned int value;
-			std::memcpy(&value, bytes, sizeof(unsigned int));
-			indices.push_back((GLuint)value);
-		}
+		model = glm::scale(model, glm::vec3(1.05f, 1.05f, 1.05f));
 	}
-	else if (componentType == 5123)
+	if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
 	{
-		for (unsigned int i = beginningOfData; i < byteOffset + accByteOffset + count * 2; i)
-		{
-			unsigned char bytes[] = { data[i++], data[i++] };
-			unsigned short value;
-			std::memcpy(&value, bytes, sizeof(unsigned short));
-			indices.push_back((GLuint)value);
-		}
+		model = glm::scale(model, glm::vec3(1.05f, 1.0f, 1.0f));
 	}
-	else if (componentType == 5122)
+	if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS)
 	{
-		for (unsigned int i = beginningOfData; i < byteOffset + accByteOffset + count * 2; i)
-		{
-			unsigned char bytes[] = { data[i++], data[i++] };
-			short value;
-			std::memcpy(&value, bytes, sizeof(short));
-			indices.push_back((GLuint)value);
-		}
+		model = glm::scale(model, glm::vec3(0.95f, 1.0f, 1.0f));
 	}
-
-	return indices;
-}
-
-std::vector<Texture> ModelGltf::getTextures()
-{
-	std::vector<Texture> textures;
-
-	std::string fileStr = std::string(file);
-	std::string fileDirectory = fileStr.substr(0, fileStr.find_last_of('/') + 1);
-
-	// Go over all images
-	for (unsigned int i = 0; i < JSON["images"].size(); i++)
+	if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS)
 	{
-		// uri of current texture
-		std::string texPath = JSON["images"][i]["uri"];
-
-		// Check if the texture has already been loaded
-		bool skip = false;
-		for (unsigned int j = 0; j < loadedTexName.size(); j++)
-		{
-			if (loadedTexName[j] == texPath)
-			{
-				textures.push_back(loadedTex[j]);
-				skip = true;
-				break;
-			}
-		}
-
-		// If the texture has been loaded, skip this
-		if (!skip)
-		{
-			// Load diffuse texture
-			if (texPath.find("baseColor") != std::string::npos)
-			{
-				Texture diffuse = Texture((fileDirectory + texPath).c_str(), "diffuse", loadedTex.size());
-				textures.push_back(diffuse);
-				loadedTex.push_back(diffuse);
-				loadedTexName.push_back(texPath);
-			}
-			// Load specular texture
-			else if (texPath.find("metallicRoughness") != std::string::npos)
-			{
-				Texture specular = Texture((fileDirectory + texPath).c_str(), "specular", loadedTex.size());
-				textures.push_back(specular);
-				loadedTex.push_back(specular);
-				loadedTexName.push_back(texPath);
-			}
-		}
+		model = glm::scale(model, glm::vec3(1.0f, 1.05f, 1.0f));
 	}
-
-	return textures;
-}
-
-std::vector<Vertex> ModelGltf::assembleVertices
-(
-	std::vector<glm::vec3> positions,
-	std::vector<glm::vec3> normals,
-	std::vector<glm::vec2> texUVs
-)
-{
-	std::vector<Vertex> vertices;
-	for (int i = 0; i < positions.size(); i++)
+	if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS)
 	{
-		vertices.push_back
-		(
-			Vertex
-			{
-				positions[i],
-				normals[i],
-				glm::vec3(1.0f, 1.0f, 1.0f),
-				texUVs[i]
-			}
-		);
+		model = glm::scale(model, glm::vec3(1.0f, 0.95f, 1.0f));
 	}
-	return vertices;
-}
-
-std::vector<glm::vec2> ModelGltf::groupFloatsVec2(std::vector<float> floatVec)
-{
-	std::vector<glm::vec2> vectors;
-	for (int i = 0; i < floatVec.size(); i)
+	if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS)
 	{
-		vectors.push_back(glm::vec2(floatVec[i++], floatVec[i++]));
+		model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.05f));
 	}
-	return vectors;
-}
-std::vector<glm::vec3> ModelGltf::groupFloatsVec3(std::vector<float> floatVec)
-{
-	std::vector<glm::vec3> vectors;
-	for (int i = 0; i < floatVec.size(); i)
+	if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS)
 	{
-		vectors.push_back(glm::vec3(floatVec[i++], floatVec[i++], floatVec[i++]));
+		model = glm::scale(model, glm::vec3(1.0f, 1.0f, 0.95f));
 	}
-	return vectors;
-}
-std::vector<glm::vec4> ModelGltf::groupFloatsVec4(std::vector<float> floatVec)
-{
-	std::vector<glm::vec4> vectors;
-	for (int i = 0; i < floatVec.size(); i)
+	if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS)
 	{
-		vectors.push_back(glm::vec4(floatVec[i++], floatVec[i++], floatVec[i++], floatVec[i++]));
+		model = glm::rotate(model, glm::radians(1.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	}
-	return vectors;
+	if (glfwGetKey(window, GLFW_KEY_Y) == GLFW_PRESS)
+	{
+		model = glm::rotate(model, glm::radians(-1.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	}
+	if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS)
+	{
+		model = glm::rotate(model, glm::radians(1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	}
+	if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS)
+	{
+		model = glm::rotate(model, glm::radians(-1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	}
+	if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS)
+	{
+		model = glm::rotate(model, glm::radians(1.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	}
+	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
+	{
+		model = glm::rotate(model, glm::radians(-1.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	}
 }

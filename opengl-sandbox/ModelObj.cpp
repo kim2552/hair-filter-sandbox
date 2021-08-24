@@ -2,11 +2,14 @@
 
 ModelObj::ModelObj(std::string file, std::vector<Texture> textures)
 {
+	std::vector<Mesh> meshes;
+	model = new Model(meshes);		// Initialize the base Model Object
+
 	filename = file;
 	tinyobj::ObjReader reader;
 	tinyobj::ObjReaderConfig reader_config;
 
-	reader_config.mtl_search_path = "./"; // Path to material files
+	reader_config.mtl_search_path = "./";				// Path to material files
 
 	if (!reader.ParseFromFile(filename, reader_config)) {
 		if (!reader.Error().empty()) {
@@ -25,6 +28,7 @@ ModelObj::ModelObj(std::string file, std::vector<Texture> textures)
 
 #if ENABLE_DEBUG
 	printf("-----------Model Object attributes-----------\n");
+	printf("file = %s\n", filename);
 	printf("# of vertices  = %d\n", (int)(attrib.vertices.size()) / 3);
 	printf("# of normals   = %d\n", (int)(attrib.normals.size()) / 3);
 	printf("# of texcoords = %d\n", (int)(attrib.texcoords.size()) / 2);
@@ -55,14 +59,13 @@ ModelObj::ModelObj(std::string file, std::vector<Texture> textures)
 				tinyobj::real_t vz = attrib.vertices[3 * size_t(idx.vertex_index) + 2];
 				glm::vec3 vertex = { vx, vy, vz };
 
-#if ENABLE_DEBUG
-				if (vx > max_vert_x) { max_vert_x = vx; }
-				if (vx < min_vert_x) { min_vert_x = vx; }
-				if (vy > max_vert_y) { max_vert_y = vy; }
-				if (vy < min_vert_y) { min_vert_y = vy; }
-				if (vz > max_vert_z) { max_vert_z = vz; }
-				if (vz < min_vert_z) { min_vert_z = vz; }
-#endif
+				// Create Bounding Box information
+				if (vx > model->originalBb.max.x) { model->originalBb.max.x = vx; }
+				if (vx < model->originalBb.min.x) { model->originalBb.min.x = vx; }
+				if (vy > model->originalBb.max.y) { model->originalBb.max.y = vy; }
+				if (vy < model->originalBb.min.y) { model->originalBb.min.y = vy; }
+				if (vz > model->originalBb.max.z) { model->originalBb.max.z = vz; }
+				if (vz < model->originalBb.min.z) { model->originalBb.min.z = vz; }
 
 				// Check if `normal_index` is zero or positive. negative = no normal data
 				glm::vec3 normal = { 0.0f, 0.0f, 0.0f };
@@ -103,145 +106,10 @@ ModelObj::ModelObj(std::string file, std::vector<Texture> textures)
 			shapes[s].mesh.material_ids[f];
 		}
 
-		meshes.push_back(Mesh(vertices, indices, textures));
-	}
+		model->originalPosition = glm::vec3(model->originalBb.min.x + ((model->originalBb.max.x - model->originalBb.min.x) / 2.0f),
+			model->originalBb.min.y + ((model->originalBb.max.y - model->originalBb.min.y) / 2.0f),
+			model->originalBb.min.z + ((model->originalBb.max.z - model->originalBb.min.z) / 2.0f));
 
-#if ENABLE_DEBUG
-	printf("--------------Object Bounding Box-------------------\n");
-	printf("max_x=%f, min_x=%f, max_y=%f, min_y=%f, max_z=%f, min_z=%f\n", max_vert_x, min_vert_x, max_vert_y, min_vert_y, max_vert_z, min_vert_z);
-	printf("----------------------------------------------------\n");
-#endif
-}
-
-void ModelObj::Draw(Shader& shader, Camera& camera)
-{
-	for (size_t i = 0; i < meshes.size(); i++) {
-		meshes[i].Draw(shader, camera, modelMat);
-	}
-}
-
-void ModelObj::UpdateModel(glm::mat4 model)
-{
-	model = glm::translate(model, Position);
-	model = glm::scale(model, glm::vec3(scale, scale, scale));
-	glm::mat4 view = glm::mat4(1.0f);
-	view = glm::lookAt(Position, Position + Orientation, Up);
-	model = model * view;
-	modelMat = model;
-
-#if ENABLE_DEBUG	//TODO::This has to reflect the transformations made to the actual model
-	glm::mat4 minVertexMat = glm::mat4(1.0f);
-	minVertexMat = glm::scale(minVertexMat, glm::vec3(1.0f / 21.0f, 1.0f / 21.0f, 1.0f / 21.0f));
-	glm::vec3 minVertexPos = glm::vec3(min_vert_x, min_vert_y, min_vert_z);
-	minVertexMat = glm::translate(minVertexMat, minVertexPos);
-	minVertexMat = minVertexMat * modelMat;
-
-	std::cout << filename << " min model coordinates:" << std::endl;
-	std::cout << "x="<<minVertexMat[3].x << std::endl;
-	std::cout << "y="<<minVertexMat[3].y << std::endl;
-	std::cout << "z="<<minVertexMat[3].z << std::endl;
-
-	glm::mat4 maxVertexMat = glm::mat4(1.0f);
-	glm::vec3 maxVertexPos = glm::vec3(max_vert_x, max_vert_y, max_vert_z);
-	maxVertexMat = glm::scale(maxVertexMat, glm::vec3(1.0f / 21.0f, 1.0f / 21.0f, 1.0f / 21.0f));
-	maxVertexMat = glm::translate(maxVertexMat, maxVertexPos);
-	maxVertexMat = maxVertexMat * modelMat;
-
-	std::cout << filename << " max model coordinates:" << std::endl;
-	std::cout << "x=" << maxVertexMat[3].x << std::endl;
-	std::cout << "y=" << maxVertexMat[3].y << std::endl;
-	std::cout << "z=" << maxVertexMat[3].z << std::endl;
-#endif
-}
-
-void ModelObj::Inputs(GLFWwindow* window, int width, int height)
-{
-	// Handles key inputs
-	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-	{
-		Position += speed * Orientation;
-	}
-	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-	{
-		Position += speed * -glm::normalize(glm::cross(Orientation, Up));
-	}
-	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-	{
-		Position += speed * -Orientation;
-	}
-	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-	{
-		Position += speed * glm::normalize(glm::cross(Orientation, Up));
-	}
-	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-	{
-		Position += speed * Up;
-	}
-	if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
-	{
-		Position += speed * -Up;
-	}
-	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-	{
-		speed = 0.4f;
-	}
-	else if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE)
-	{
-		speed = 0.1f;
-	}
-	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
-	{
-		scale += speed * 0.01;
-	}
-	if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS)
-	{
-		scale += speed * -0.01;
-	}
-
-	// Handles mouse inputs
-	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
-	{
-		// Hides mouse cursor
-		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
-
-		// Prevents camera from jumping on the first click
-		if (firstClick)
-		{
-			glfwSetCursorPos(window, (width / 2), (height / 2));
-			firstClick = false;
-		}
-
-		// Stores the coordinates of the cursor
-		double mouseX;
-		double mouseY;
-		// Fetches the coordinates of the cursor
-		glfwGetCursorPos(window, &mouseX, &mouseY);
-
-		// Normalizes and shifts the coordinates of the cursor such that they begin in the middle of the screen
-		// and then "transforms" them into degrees 
-		float rotX = sensitivity * (float)(mouseY - (height / 2)) / height;
-		float rotY = sensitivity * (float)(mouseX - (width / 2)) / width;
-
-		// Calculates upcoming vertical change in the Orientation
-		glm::vec3 newOrientation = glm::rotate(Orientation, glm::radians(-rotX), glm::normalize(glm::cross(Orientation, Up)));
-
-		// Decides whether or not the next vertical Orientation is legal or not
-		if (abs(glm::angle(newOrientation, Up) - glm::radians(90.0f)) <= glm::radians(85.0f))
-		{
-			Orientation = newOrientation;
-		}
-
-		// Rotates the Orientation left and right
-		Orientation = glm::rotate(Orientation, glm::radians(-rotY), Up);
-
-		// Sets mouse cursor to the middle of the screen so that it doesn't end up roaming around
-		glfwSetCursorPos(window, (width / 2), (height / 2));
-	}
-	else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE)
-	{
-		// Unhides cursor since camera is not looking around anymore
-		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-		// Makes sure the next time the camera looks around it doesn't jump
-		firstClick = true;
+		model->meshes.push_back(Mesh(vertices, indices, textures));
 	}
 }
