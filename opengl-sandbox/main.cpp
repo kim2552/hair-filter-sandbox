@@ -80,7 +80,7 @@ int main()
 	//stbi_set_flip_vertically_on_load(true);
 
 	// Reads the image from a file and stores it in bytes
-	unsigned char* imgBytes = stbi_load("assets/image/face4.jpg", &widthImg, &heightImg, &numColCh, 0);	//TODO::Replace this with live camera feed images
+	unsigned char* imgBytes = stbi_load("assets/image/face5.jpg", &widthImg, &heightImg, &numColCh, 0);	//TODO::Replace this with live camera feed images
 
 	float imageAspectRatio = (float)widthImg / (float)heightImg;
 	
@@ -319,13 +319,14 @@ int main()
 		glm::mat4 hairObjectModel = glm::mat4(1.0f);
 
 		// Calculate the scale of the hair object
-		float goldenRatioWidth = 1.7723179;
-		float goldenRatioHeight = 1.8758706;
+		float goldenRatioWidth = 1.7723179;				// Width ratio value based on developer preference			// TODO::Store values in json file
+		float goldenRatioHeight = 1.8758706;			// Height ratio value based on developer preference
+		float goldenZScale = 1.0f / 25.0f;				// Constant Z scale value based on developer preference
 		float objectWidth = glm::length(hairBob.model->originalBb.max.x - hairBob.model->originalBb.min.x);
 		float objectHeight = glm::length(hairBob.model->originalBb.max.y - hairBob.model->originalBb.min.y);
 		float scaleMultWidth = goldenRatioWidth * hairBob.model->faceWidth / objectWidth;
 		float scaleMultHeight = goldenRatioHeight * hairBob.model->faceHeight / objectHeight;
-		hairObjectModel = glm::scale(hairObjectModel, glm::vec3(scaleMultWidth, scaleMultHeight, 1.0f/25.0f));	// TODO::Find calculation for Z component
+		hairObjectModel = glm::scale(hairObjectModel, glm::vec3(scaleMultWidth, scaleMultHeight, goldenZScale));	// TODO::Find calculation for Z component
 
 		// Rotate object to match face direction
 		hairObjectModel = glm::rotate(hairObjectModel, glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));

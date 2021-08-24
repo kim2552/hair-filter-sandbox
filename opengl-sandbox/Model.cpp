@@ -44,13 +44,14 @@ void Model::UpdateModel(glm::mat4 model)
 	printf("original model height: %f\n", glm::length(originalBb.max.y - originalBb.min.y));
 	printf("scaledValueWidth: %f\n", sqrt(model[0][0] * model[0][0] + model[0][1] * model[0][1] + model[0][2] * model[0][2]));
 	printf("scaledValueHeight: %f\n", sqrt(model[1][0] * model[1][0] + model[1][1] * model[1][1] + model[1][2] * model[1][2]));
-	//printf("goldenRatioWidth: %f\n", );
-	//printf("goldenRatioHeight: %f\n", );
+	printf("*SAVE*scaledValueZ: %f\n", sqrt(model[2][0] * model[2][0] + model[2][1] * model[2][1] + model[2][2] * model[2][2]));
+	printf("*SAVE*goldenRatioWidth: %f\n", sqrt(model[0][0] * model[0][0] + model[0][1] * model[0][1] + model[0][2] * model[0][2]) * glm::length(originalBb.max.x - originalBb.min.x) / faceWidth);
+	printf("*SAVE*goldenRatioHeight: %f\n", sqrt(model[1][0] * model[1][0] + model[1][1] * model[1][1] + model[1][2] * model[1][2]) * glm::length(originalBb.max.y - originalBb.min.y) / faceHeight);
 	printf("position: {%f, %f, %f}\n", position.x, position.y, position.z);
 	printf("ratio object to face width: %f\n", modelWidth / faceWidth);
 	printf("ratio object to face height: %f\n", modelHeight / faceHeight);
 	printf("position distance from topHeadCoord={%f,%f,%f}\n", position.x - topHeadCoord.x, position.y - topHeadCoord.y, position.z - topHeadCoord.z);
-	printf("fixedVertex distance from topHeadCoord={%f,%f,%f}\n", fixedVertex.x - topHeadCoord.x, fixedVertex.y - topHeadCoord.y, fixedVertex.z - topHeadCoord.z);
+	printf("*SAVE*fixedVertex distance from topHeadCoord={%f,%f,%f}\n", fixedVertex.x - topHeadCoord.x, fixedVertex.y - topHeadCoord.y, fixedVertex.z - topHeadCoord.z);
 	printf("-------------------------------\n");
 
 }
