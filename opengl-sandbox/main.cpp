@@ -80,7 +80,7 @@ int main()
 	//stbi_set_flip_vertically_on_load(true);
 
 	// Reads the image from a file and stores it in bytes
-	unsigned char* imgBytes = stbi_load("assets/image/face5.jpg", &widthImg, &heightImg, &numColCh, 0);	//TODO::Replace this with live camera feed images
+	unsigned char* imgBytes = stbi_load("assets/image/face1.jpg", &widthImg, &heightImg, &numColCh, 0);	//TODO::Replace this with live camera feed images
 
 	float imageAspectRatio = (float)widthImg / (float)heightImg;
 	
@@ -92,6 +92,7 @@ int main()
 	FaceDetect fdetect = FaceDetect();									// FaceDetect object
 	std::vector<std::vector<cv::Point2f>> faces;						// Array for all faces
 	std::vector<Mesh> faceDetectMeshes;									// Each face has it's own mesh
+	std::vector<glm::mat4> faceDetectModels;							// Each face has it's own model
 
 	faces = fdetect.getFaceLandmarks(imgBytes, widthImg, heightImg);	// Get faces in image
 
@@ -121,14 +122,15 @@ int main()
 		std::vector <Texture> fTex(faceText, faceText + sizeof(faceText) / sizeof(Texture));
 		// Create and store face mesh
 		faceDetectMeshes.push_back(Mesh(fVerts, fdetect.indices, fTex));
+	
+		// Activate shader for Face Mask and configure the model matrix
+		shaderProgramFaceMask.Activate();
+		glm::mat4 facemaskModel = glm::mat4(1.0f);
+		facemaskModel = glm::scale(facemaskModel, glm::vec3(faceMaskScaledLength, faceMaskScaledLength, faceMaskScaledLength));
+		facemaskModel = glm::translate(facemaskModel, glm::vec3(0.375f, -0.5f, -0.875f));
+		facemaskModel = glm::rotate(facemaskModel, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		faceDetectModels.push_back(facemaskModel);
 	}
-
-	// Activate shader for Face Mask and configure the model matrix
-	shaderProgramFaceMask.Activate();
-	glm::mat4 facemaskModel = glm::mat4(1.0f);
-	facemaskModel = glm::scale(facemaskModel, glm::vec3(faceMaskScaledLength, faceMaskScaledLength, faceMaskScaledLength));
-	facemaskModel = glm::translate(facemaskModel, glm::vec3(0.375f, -0.5f, -0.875f));
-	facemaskModel = glm::rotate(facemaskModel, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 	/****************************************************/
 
@@ -140,7 +142,7 @@ int main()
 	{
 		//Initialize face mesh object
 		FaceMesh fmesh = FaceMesh();
-		eos::core::LandmarkCollection<Eigen::Vector2f> landmarkCollection = fmesh.processLandmarks(faces[0]);
+		eos::core::LandmarkCollection<Eigen::Vector2f> landmarkCollection = fmesh.processLandmarks(faces[i]);
 		FaceMeshObj faceMeshObj = fmesh.getFaceMeshObj(landmarkCollection, RESIZED_IMAGE_WIDTH, RESIZED_IMAGE_HEIGHT);
 
 		Texture facemeshText[]										// Texture for face detect
@@ -229,7 +231,7 @@ int main()
 	/******************************************************************/
 
 	/**************************DEBUG POINT(s)**************************/
-
+#if ENABLE_DEBUG_POINTS
 	// Vertices coordinates
 	Vertex pointVerts[] =
 	{ //               COORDINATES           /            NORMALS          /           COLORS         /       TEXCOORDS         //
@@ -264,7 +266,7 @@ int main()
 	pointModel = glm::scale(pointModel, glm::vec3(0.01f, 0.01f, 0.01f));
 	glm::mat4 translation = glm::translate(glm::mat4(1.f), glm::vec3(faceObjModels[0].topHeadCoord.x, faceObjModels[0].topHeadCoord.y, faceObjModels[0].topHeadCoord.z));
 	pointModel = translation * pointModel;
-
+#endif	//ENABLE_DEBUG_POINTS
 	/******************************************************************/
 
 	/**************************Image Texture***********************/
@@ -336,7 +338,7 @@ int main()
 
 		hairBob.model->UpdateModel(hairObjectModel);			// Updates the position and bounding box of the scaled, rotated object
 
-		float goldenDiffX = -0.093447;		// Value obtained from fixedVertex distance from topHeadCoord	#TODO::Save values in a json file and retrieve it
+		float goldenDiffX = -0.063447;		// Value obtained from fixedVertex distance from topHeadCoord	#TODO::Save values in a json file and retrieve it
 		float goldenDiffY = 0.021071;		// Value obtained from fixedVertex distance from topHeadCoord
 		float goldenDiffZ = 0.007910;		// Value obtained from fixedVertex distance from topHeadCoord
 		
@@ -398,7 +400,7 @@ int main()
 		glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 		for (size_t i = 0; i < faceDetectMeshes.size(); i++)
 		{
-			faceDetectMeshes[i].Draw(shaderProgramFaceMask, camera, facemaskModel);
+			faceDetectMeshes[i].Draw(shaderProgramFaceMask, camera, faceDetectModels[i]);
 		}
 #if ENABLE_FACE_MESH
 		for (size_t i = 0; i < faceObjModels.size(); i++)
@@ -406,7 +408,9 @@ int main()
 			faceObjModels[i].Draw(shaderProgramFaceMesh, camera);
 		}
 #endif
+#if ENABLE_DEBUG_POINTS
 		pointMesh.Draw(shaderProgramPoint, camera, pointModel);
+#endif
 
 		//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);

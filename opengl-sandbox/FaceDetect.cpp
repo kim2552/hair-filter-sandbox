@@ -23,7 +23,7 @@ std::vector<std::vector<cv::Point2f>> FaceDetect::getFaceLandmarks(unsigned char
 		gray = imageMat.clone();
 	}
 	cv::equalizeHist(gray, gray);
-	face_cascade.detectMultiScale(gray, faces, 1.1, 3, 0, cv::Size(30, 30));
+	face_cascade.detectMultiScale(gray, faces, 1.1, 1, 0, cv::Size(30, 30));
 
 	std::vector<std::vector<cv::Point2f>> shapes;
 	if (faces.size() > 0) {
