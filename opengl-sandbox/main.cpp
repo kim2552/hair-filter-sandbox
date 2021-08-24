@@ -80,7 +80,7 @@ int main()
 	//stbi_set_flip_vertically_on_load(true);
 
 	// Reads the image from a file and stores it in bytes
-	unsigned char* imgBytes = stbi_load("assets/image/face1.jpg", &widthImg, &heightImg, &numColCh, 0);	//TODO::Replace this with live camera feed images
+	unsigned char* imgBytes = stbi_load("assets/image/face7.jpg", &widthImg, &heightImg, &numColCh, 0);	//TODO::Replace this with live camera feed images
 
 	float imageAspectRatio = (float)widthImg / (float)heightImg;
 	
@@ -135,7 +135,6 @@ int main()
 	/****************************************************/
 
 	/*********************Face Mesh Object*******************************/
-#if ENABLE_FACE_MESH
 	std::vector<Model> faceObjModels;								// Each face has it's own Model
 
 	for (size_t i = 0; i < faces.size(); i++)						// Loop through all the faces
@@ -226,8 +225,6 @@ int main()
 		faceObjModels.push_back(newFaceObj);	// Store the Model
 
 	}
-
-#endif	//ENABLE_FACE_MESH
 	/******************************************************************/
 
 	/**************************DEBUG POINT(s)**************************/
@@ -396,24 +393,28 @@ int main()
 		}
 
 		imgMesh.Draw(shaderProgramImg, camera, imgModel);		// Draw the image
-		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); 
+#if ENABLE_FACE_MESH
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); 
+#else
 		glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+#endif
 		for (size_t i = 0; i < faceDetectMeshes.size(); i++)
 		{
 			faceDetectMeshes[i].Draw(shaderProgramFaceMask, camera, faceDetectModels[i]);
 		}
-#if ENABLE_FACE_MESH
+
 		for (size_t i = 0; i < faceObjModels.size(); i++)
 		{
 			faceObjModels[i].Draw(shaderProgramFaceMesh, camera);
 		}
-#endif
 #if ENABLE_DEBUG_POINTS
 		pointMesh.Draw(shaderProgramPoint, camera, pointModel);
 #endif
-
-		//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+#if ENABLE_FACE_MESH
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+#else
 		glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+#endif
 		for (size_t i = 0; i < hairObjs.size(); i++)
 		{
 			if (selected == 1) {			// Current selected input controls is Object
