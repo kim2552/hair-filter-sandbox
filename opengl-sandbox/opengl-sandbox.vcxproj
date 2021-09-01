@@ -99,7 +99,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opencv_core453d.lib;opencv_imgproc453d.lib;opencv_highgui453d.lib;opencv_ml453d.lib;opencv_video453d.lib;opencv_features2d453d.lib;opencv_calib3d453d.lib;opencv_objdetect453d.lib;opencv_flann453d.lib;opencv_face453d.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opencv_core453d.lib;opencv_imgproc453d.lib;opencv_highgui453d.lib;opencv_ml453d.lib;opencv_video453d.lib;opencv_features2d453d.lib;opencv_calib3d453d.lib;opencv_objdetect453d.lib;opencv_flann453d.lib;opencv_face453d.lib;opencv_videoio453d.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:\Users\jooho\Desktop\Sandbox\opengl-sandbox\opengl-sandbox\Libraries\lib;D:\sdks\opencv-4.5.3\build\install\x64\vc16\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -130,7 +130,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opencv_core453d.lib;opencv_imgproc453d.lib;opencv_highgui453d.lib;opencv_ml453d.lib;opencv_video453d.lib;opencv_features2d453d.lib;opencv_calib3d453d.lib;opencv_objdetect453d.lib;opencv_flann453d.lib;opencv_face453d.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opencv_core453d.lib;opencv_imgproc453d.lib;opencv_highgui453d.lib;opencv_ml453d.lib;opencv_video453d.lib;opencv_features2d453d.lib;opencv_calib3d453d.lib;opencv_objdetect453d.lib;opencv_flann453d.lib;opencv_face453d.lib;opencv_videoio453d.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:\Users\jooho\Desktop\Sandbox\opengl-sandbox\opengl-sandbox\Libraries\lib;D:\sdks\opencv-4.5.3\build\install\x64\vc16\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
