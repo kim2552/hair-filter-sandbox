@@ -78,7 +78,7 @@ void Texture::configureTexture(unsigned char* bytes, const char* texType, GLuint
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 
 	// Deletes the image data as it is already in the OpenGL Texture object
-	stbi_image_free(bytes);
+	//stbi_image_free(bytes);
 
 	// Unbinds the OpenGL Texture object so that it can't accidentally be modified
 	glBindTexture(GL_TEXTURE_2D, 0);

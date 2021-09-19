@@ -66,6 +66,9 @@
     <ClCompile Include="Model.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="D:\sdks\dlib\dlib\all\source.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="model.vert">
@@ -84,6 +87,9 @@
       <Filter>Resource Files\Shaders</Filter>
     </None>
     <None Include="point.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="image_trans.frag">
       <Filter>Resource Files\Shaders</Filter>
     </None>
   </ItemGroup>

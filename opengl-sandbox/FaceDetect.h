@@ -5,8 +5,14 @@
 #include "opencv2/objdetect.hpp"
 #include "opencv2/highgui.hpp"
 #include "opencv2/imgproc.hpp"
+#include "opencv2/imgcodecs.hpp"
 #include "opencv2/videoio.hpp"
 #include <opencv2/face/facemark.hpp>
+
+#include "dlib/image_processing/frontal_face_detector.h"
+#include "dlib/image_processing/render_face_detections.h"
+#include "dlib/image_processing.h"
+#include <dlib/opencv.h>
 
 #include<glad/glad.h>
 
@@ -17,10 +23,22 @@ class FaceDetect
 public:
 	FaceDetect();
 
-	std::vector<std::vector<cv::Point2f>> getFaceLandmarks(unsigned char* image, int width, int height);
+	std::vector<std::vector<cv::Point>> getFaceLandmarks(unsigned char* image, int width, int height);
 
 	cv::CascadeClassifier face_cascade;
 	cv::Ptr<cv::face::Facemark> facemark;
+
+	cv::Mat mask;
+	cv::Mat markers;
+	cv::Mat bgdModel, fgdModel;
+
+	cv::Rect rect;
+	std::vector<cv::Point> fgdPxls, bgdPxls, prFgdPxls, prBgdPxls;
+
+	dlib::shape_predictor shape_predictor;
+	dlib::frontal_face_detector face_detector;
+
+	unsigned char* face_mask_image;
 
 	// Vertices coordinates for face
 	std::vector<GLuint> indices

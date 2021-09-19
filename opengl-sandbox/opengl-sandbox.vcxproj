@@ -72,8 +72,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>D:\sandbox\eos\3rdparty\eigen;D:\sandbox\eos\3rdparty\toml11;D:\sandbox\eos\3rdparty\eigen3-nnls\src;D:\sandbox\eos\3rdparty\nanoflann\include;D:\sandbox\eos\3rdparty\eigen\Eigen;D:\sandbox\eos\3rdparty\cereal\include;D:\sandbox\eos\include;D:\sdks\opencv-4.5.3\build\include;D:\sdks\opencv-4.5.3\build\install\include;C:\Users\jooho\Desktop\Sandbox\opengl-sandbox\opengl-sandbox\Libraries\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\sdks\opencv-4.5.3\build\install\x64\vc16\lib;C:\Users\jooho\Desktop\Sandbox\opengl-sandbox\opengl-sandbox\Libraries\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\sdks\dlib;D:\sandbox\eos\3rdparty\eigen;D:\sandbox\eos\3rdparty\toml11;D:\sandbox\eos\3rdparty\eigen3-nnls\src;D:\sandbox\eos\3rdparty\nanoflann\include;D:\sandbox\eos\3rdparty\eigen\Eigen;D:\sandbox\eos\3rdparty\cereal\include;D:\sandbox\eos\include;D:\sdks\opencv-4.5.3\build\include;D:\sdks\opencv-4.5.3\build\install\include;C:\Users\jooho\Desktop\Sandbox\opengl-sandbox\opengl-sandbox\Libraries\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\sdks\dlib\build\dlib\Debug;D:\sdks\opencv-4.5.3\build\install\x64\vc16\lib;C:\Users\jooho\Desktop\Sandbox\opengl-sandbox\opengl-sandbox\Libraries\lib;$(LibraryPath)</LibraryPath>
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -81,7 +81,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>D:\sandbox\eos\3rdparty\eigen;D:\sandbox\eos\3rdparty\toml11;D:\sandbox\eos\3rdparty\eigen3-nnls\src;D:\sandbox\eos\3rdparty\nanoflann\include;D:\sandbox\eos\3rdparty\eigen\Eigen;D:\sandbox\eos\3rdparty\cereal\include;D:\sandbox\eos\include;D:\sdks\opencv-4.5.3\build\include;D:\sdks\opencv-4.5.3\build\install\include;C:\Users\jooho\Desktop\Sandbox\opengl-sandbox\opengl-sandbox\Libraries\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\sdks\dlib;D:\sandbox\eos\3rdparty\eigen;D:\sandbox\eos\3rdparty\toml11;D:\sandbox\eos\3rdparty\eigen3-nnls\src;D:\sandbox\eos\3rdparty\nanoflann\include;D:\sandbox\eos\3rdparty\eigen\Eigen;D:\sandbox\eos\3rdparty\cereal\include;D:\sandbox\eos\include;D:\sdks\opencv-4.5.3\build\include;D:\sdks\opencv-4.5.3\build\install\include;C:\Users\jooho\Desktop\Sandbox\opengl-sandbox\opengl-sandbox\Libraries\include;$(IncludePath)</IncludePath>
     <LibraryPath>D:\sdks\opencv-4.5.3\build\install\x64\vc16\lib;C:\Users\jooho\Desktop\Sandbox\opengl-sandbox\opengl-sandbox\Libraries\lib;$(LibraryPath)</LibraryPath>
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
@@ -99,7 +99,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opencv_core453d.lib;opencv_imgproc453d.lib;opencv_highgui453d.lib;opencv_ml453d.lib;opencv_video453d.lib;opencv_features2d453d.lib;opencv_calib3d453d.lib;opencv_objdetect453d.lib;opencv_flann453d.lib;opencv_face453d.lib;opencv_videoio453d.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dlib.lib;opencv_core453d.lib;opencv_imgproc453d.lib;opencv_highgui453d.lib;opencv_ml453d.lib;opencv_video453d.lib;opencv_features2d453d.lib;opencv_calib3d453d.lib;opencv_objdetect453d.lib;opencv_flann453d.lib;opencv_face453d.lib;opencv_videoio453d.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:\Users\jooho\Desktop\Sandbox\opengl-sandbox\opengl-sandbox\Libraries\lib;D:\sdks\opencv-4.5.3\build\install\x64\vc16\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -152,6 +152,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="D:\sdks\dlib\dlib\all\source.cpp" />
     <ClCompile Include="EBO.cpp" />
     <ClCompile Include="FaceDetect.cpp" />
     <ClCompile Include="FaceMesh.cpp" />
@@ -170,6 +171,7 @@
   <ItemGroup>
     <None Include="image.frag" />
     <None Include="image.vert" />
+    <None Include="image_trans.frag" />
     <None Include="model.frag" />
     <None Include="model.vert" />
     <None Include="point.frag" />
