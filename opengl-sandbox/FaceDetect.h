@@ -8,22 +8,39 @@
 #include "opencv2/imgcodecs.hpp"
 #include "opencv2/videoio.hpp"
 #include <opencv2/face/facemark.hpp>
+#include <opencv2/opencv.hpp>
+
 
 #include "dlib/image_processing/frontal_face_detector.h"
 #include "dlib/image_processing/render_face_detections.h"
 #include "dlib/image_processing.h"
 #include <dlib/opencv.h>
 
+#include<glm/glm.hpp>
 #include<glad/glad.h>
 
 #include "globals.h"
+
+struct FaceDetectObj {
+	std::vector<cv::Point> shape;
+	cv::Point topHeadPoint;
+	cv::Point botHeadPoint;
+	cv::Point rightHeadPoint;
+	cv::Point leftHeadPoint;
+	glm::vec3 topHeadCoord;
+	float width;
+	float height;
+	float yaw;
+	float pitch;
+	float roll;
+};
 
 class FaceDetect
 {
 public:
 	FaceDetect();
 
-	std::vector<std::vector<cv::Point>> getFaceLandmarks(unsigned char* image, int width, int height);
+	std::vector<FaceDetectObj> getFaceLandmarks(unsigned char* image, int width, int height);
 
 	cv::CascadeClassifier face_cascade;
 	cv::Ptr<cv::face::Facemark> facemark;
