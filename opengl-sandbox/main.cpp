@@ -181,99 +181,6 @@ int main()
 		faceObjs[i].height = glm::length(vth - vbh);
 	}
 
-	/*********************Face Mesh Object*******************************/
-	//std::vector<Model> faceObjModels;								// Each face has it's own Model
-
-	//for (size_t i = 0; i < faces.size(); i++)						// Loop through all the faces
-	//{
-	//	//Initialize face mesh object
-	//	FaceMesh fmesh = FaceMesh();
-	//	eos::core::LandmarkCollection<Eigen::Vector2f> landmarkCollection = fmesh.processLandmarks(faces[i]);
-	//	FaceMeshObj faceMeshObj = fmesh.getFaceMeshObj(landmarkCollection, RESIZED_IMAGE_WIDTH, RESIZED_IMAGE_HEIGHT);
-
-	//	Texture facemeshText[]										// Texture for face detect
-	//	{
-	//		Texture("assets/colors/blue.png", "diffuse", 0)
-	//	};
-
-	//	// Initialize all of the vertices
-	//	std::vector<Vertex> facemeshVerts;
-	//	for (size_t i = 0; i < faceMeshObj.mesh.vertices.size(); i++)
-	//	{
-	//		// Get original location of the vertex
-	//		const auto p = glm::project(
-	//			{ faceMeshObj.mesh.vertices[i][0], faceMeshObj.mesh.vertices[i][1], faceMeshObj.mesh.vertices[i][2] },
-	//			faceMeshObj.rendering_parameters.get_modelview(), faceMeshObj.rendering_parameters.get_projection(), glm::vec4(0, RESIZED_IMAGE_HEIGHT, RESIZED_IMAGE_WIDTH, -RESIZED_IMAGE_HEIGHT));
-
-	//		// Add the vertex after modifying based on aspect ratio
-	//		facemeshVerts.push_back(Vertex{ glm::vec3(p.x * imageAspectRatio / (float)RESIZED_IMAGE_WIDTH, p.y / (float)RESIZED_IMAGE_HEIGHT, -p.z / (float)RESIZED_IMAGE_HEIGHT), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(faceMeshObj.mesh.texcoords[i](0), faceMeshObj.mesh.texcoords[i](1)) });
-	//	}
-
-	//	// Initialize all of the indices
-	//	std::vector<GLuint> facemeshInds;
-	//	for (size_t i = 0; i < faceMeshObj.mesh.tvi.size(); i++)
-	//	{
-	//		for (size_t j = 0; j < faceMeshObj.mesh.tvi[i].size(); j++)
-	//		{
-	//			facemeshInds.push_back(faceMeshObj.mesh.tvi[i][j]);
-	//		}
-	//	}
-
-	//	// Initialize the textures
-	//	std::vector <Texture> fTex(facemeshText, facemeshText + sizeof(facemeshText) / sizeof(Texture));
-
-	//	// Create and store face mesh
-	//	std::vector<Mesh> newFaceMeshes;
-	//	newFaceMeshes.push_back(Mesh(facemeshVerts, facemeshInds, fTex));
-
-	//	// calculate scaling face object
-	//	sideLength = glm::tan(glm::radians(22.5f)) * 0.95f;
-	//	float faceMeshScaledLength = 2.0f - (2.0f * sideLength);
-
-	//	// Activate shader for Face Mesh and configure the model matrix
-	//	shaderProgramFaceMesh.Activate();
-	//	glm::mat4 faceMeshModel = glm::mat4(1.0f);
-	//	faceMeshModel = glm::scale(faceMeshModel, glm::vec3(faceMeshScaledLength, faceMeshScaledLength, faceMeshScaledLength));
-	//	faceMeshModel = glm::translate(faceMeshModel, glm::vec3(0.375f, -0.5f, -0.875f));
-	//	faceMeshModel = glm::rotate(faceMeshModel, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-
-	//	// Create a new Model object
-	//	Model newFaceObj(newFaceMeshes);
-	//	newFaceObj.roll = faceMeshObj.roll;
-	//	newFaceObj.pitch = faceMeshObj.pitch;
-	//	newFaceObj.yaw = faceMeshObj.yaw;
-
-	//	const auto th = glm::project(
-	//		{ faceMeshObj.mesh.vertices[FACE_MESH_TOPHEAD_INDEX][0], faceMeshObj.mesh.vertices[FACE_MESH_TOPHEAD_INDEX][1], faceMeshObj.mesh.vertices[FACE_MESH_TOPHEAD_INDEX][2] },
-	//		faceMeshObj.rendering_parameters.get_modelview(), faceMeshObj.rendering_parameters.get_projection(), glm::vec4(0, RESIZED_IMAGE_HEIGHT, RESIZED_IMAGE_WIDTH, -RESIZED_IMAGE_HEIGHT));
-	//	const auto bh = glm::project(
-	//		{ faceMeshObj.mesh.vertices[FACE_MESH_BOTHEAD_INDEX][0], faceMeshObj.mesh.vertices[FACE_MESH_BOTHEAD_INDEX][1], faceMeshObj.mesh.vertices[FACE_MESH_BOTHEAD_INDEX][2] },
-	//		faceMeshObj.rendering_parameters.get_modelview(), faceMeshObj.rendering_parameters.get_projection(), glm::vec4(0, RESIZED_IMAGE_HEIGHT, RESIZED_IMAGE_WIDTH, -RESIZED_IMAGE_HEIGHT));
-	//	const auto rc = glm::project(
-	//		{ faceMeshObj.mesh.vertices[FACE_MESH_RIGHTCONTOUR_INDEX][0], faceMeshObj.mesh.vertices[FACE_MESH_RIGHTCONTOUR_INDEX][1], faceMeshObj.mesh.vertices[FACE_MESH_RIGHTCONTOUR_INDEX][2] },
-	//		faceMeshObj.rendering_parameters.get_modelview(), faceMeshObj.rendering_parameters.get_projection(), glm::vec4(0, RESIZED_IMAGE_HEIGHT, RESIZED_IMAGE_WIDTH, -RESIZED_IMAGE_HEIGHT));
-	//	const auto lc = glm::project(
-	//		{ faceMeshObj.mesh.vertices[FACE_MESH_LEFTCONTOUR_INDEX][0], faceMeshObj.mesh.vertices[FACE_MESH_LEFTCONTOUR_INDEX][1], faceMeshObj.mesh.vertices[FACE_MESH_LEFTCONTOUR_INDEX][2] },
-	//		faceMeshObj.rendering_parameters.get_modelview(), faceMeshObj.rendering_parameters.get_projection(), glm::vec4(0, RESIZED_IMAGE_HEIGHT, RESIZED_IMAGE_WIDTH, -RESIZED_IMAGE_HEIGHT));
-	//	glm::vec4 vth(glm::vec3(th.x * imageAspectRatio / (float)RESIZED_IMAGE_WIDTH, th.y / (float)RESIZED_IMAGE_HEIGHT, -th.z / (float)RESIZED_IMAGE_HEIGHT), 1.0f);
-	//	glm::vec4 vbh(glm::vec3(bh.x* imageAspectRatio / (float)RESIZED_IMAGE_WIDTH, bh.y / (float)RESIZED_IMAGE_HEIGHT, -bh.z / (float)RESIZED_IMAGE_HEIGHT), 1.0f);
-	//	glm::vec4 vrc(glm::vec3(rc.x* imageAspectRatio / (float)RESIZED_IMAGE_WIDTH, rc.y / (float)RESIZED_IMAGE_HEIGHT, -rc.z / (float)RESIZED_IMAGE_HEIGHT), 1.0f);
-	//	glm::vec4 vlc(glm::vec3(lc.x* imageAspectRatio / (float)RESIZED_IMAGE_WIDTH, lc.y / (float)RESIZED_IMAGE_HEIGHT, -lc.z / (float)RESIZED_IMAGE_HEIGHT), 1.0f);
-	//	vth = faceMeshModel * vth;
-	//	vbh = faceMeshModel * vbh;
-	//	vrc = faceMeshModel * vrc;
-	//	vlc = faceMeshModel * vlc;
-	//	newFaceObj.topHeadCoord = vth;
-	//	newFaceObj.faceWidth = glm::length(vrc - vlc);
-	//	newFaceObj.faceHeight = glm::length(vth - vbh);
-
-	//	newFaceObj.UpdateModel(faceMeshModel);
-
-	//	faceObjModels.push_back(newFaceObj);	// Store the Model
-
-	//}
-	/******************************************************************/
-
 	/**************************DEBUG POINT(s)**************************/
 #if ENABLE_DEBUG_POINTS
 	// Vertices coordinates
@@ -339,7 +246,7 @@ int main()
 
 	std::vector<ModelObj> hairObjs;
 
-	for (auto fom : faceObjs)
+	for (auto fom : faceObjs)	// loop through each face object model
 	{
 		// Initialize texture
 		Texture hairText[]
@@ -362,30 +269,36 @@ int main()
 		glm::mat4 hairObjectModel = glm::mat4(1.0f);
 
 		// Calculate the scale of the hair object
-		float goldenRatioWidth = 1.677070;				// Width ratio value based on developer preference			// TODO::Store values in json file
-		float goldenRatioHeight = 1.345675;			// Height ratio value based on developer preference
-		float goldenZScale = 0.030815;				// Constant Z scale value based on developer preference
-		float objectWidth = glm::length(hairBob.model->originalBb.max.x - hairBob.model->originalBb.min.x);
-		float objectHeight = glm::length(hairBob.model->originalBb.max.y - hairBob.model->originalBb.min.y);
-		float scaleMultWidth = goldenRatioWidth * hairBob.model->faceWidth / objectWidth;
-		float scaleMultHeight = goldenRatioHeight * hairBob.model->faceHeight / objectHeight;
-		hairObjectModel = glm::scale(hairObjectModel, glm::vec3(scaleMultWidth, scaleMultHeight, goldenZScale));	// TODO::Find calculation for Z component
+		hairBob.model->savedRatioWidth = 1.770502;				// Width ratio value based on developer preference			// TODO::Store values in json file
+		hairBob.model->savedRatioHeight = 1.448357;			// Height ratio value based on developer preference
+		hairBob.model->savedScaleZ = 0.036920;				// Constant Z scale value based on developer preference
+		hairBob.model->originalModelWidth = glm::length(hairBob.model->originalBb.max.x - hairBob.model->originalBb.min.x);
+		hairBob.model->originalModelHeight = glm::length(hairBob.model->originalBb.max.y - hairBob.model->originalBb.min.y);
+		float scaleMultWidth = hairBob.model->savedRatioWidth * hairBob.model->faceWidth / hairBob.model->originalModelWidth;
+		float scaleMultHeight = hairBob.model->savedRatioHeight * hairBob.model->faceHeight / hairBob.model->originalModelHeight;
+		hairObjectModel = glm::scale(hairObjectModel, glm::vec3(scaleMultWidth, scaleMultHeight, hairBob.model->savedScaleZ));	// TODO::Find calculation for Z component
 
 		// Rotate object to match face direction
-		hairObjectModel = glm::rotate(hairObjectModel, glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-		hairObjectModel = glm::rotate(hairObjectModel, glm::radians(fom.pitch), glm::vec3(1.0f, 0.0f, 0.0f));
-		hairObjectModel = glm::rotate(hairObjectModel, glm::radians(fom.yaw), glm::vec3(0.0f, 1.0f, 0.0f));
-		hairObjectModel = glm::rotate(hairObjectModel, glm::radians(fom.roll), glm::vec3(0.0f, 0.0f, -1.0f));
+		hairBob.model->facePitch = fom.pitch;
+		hairBob.model->faceYaw = fom.yaw;
+		hairBob.model->faceRoll = -fom.roll;
+		hairBob.model->savedPitch = 179.599976;
+		hairBob.model->savedYaw = 10.400003;
+		hairBob.model->savedRoll = 0;
 
-		hairBob.model->UpdateModel(hairObjectModel);			// Updates the position and bounding box of the scaled, rotated object
+		hairObjectModel = glm::rotate(hairObjectModel, glm::radians(hairBob.model->facePitch + hairBob.model->savedPitch), glm::vec3(1.0f, 0.0f, 0.0f));
+		hairObjectModel = glm::rotate(hairObjectModel, glm::radians(hairBob.model->faceYaw + hairBob.model->savedYaw), glm::vec3(0.0f, 1.0f, 0.0f));
+		hairObjectModel = glm::rotate(hairObjectModel, glm::radians(hairBob.model->faceRoll + hairBob.model->savedRoll), glm::vec3(0.0f, 0.0f, 1.0f));
 
-		float goldenDiffX = -0.075976;		// Value obtained from fixedVertex distance from topHeadCoord	#TODO::Save values in a json file and retrieve it
-		float goldenDiffY = 0.025150;		// Value obtained from fixedVertex distance from topHeadCoord
-		float goldenDiffZ = -1.009983;		// Value obtained from fixedVertex distance from topHeadCoord
+		hairBob.model->UpdateModel(hairObjectModel);
+
+		hairBob.model->savedTopHeadDist.x = -0.062701;		// Value obtained from fixedVertex distance from topHeadCoord	#TODO::Save values in a json file and retrieve it
+		hairBob.model->savedTopHeadDist.y = 0.002821;		// Value obtained from fixedVertex distance from topHeadCoord
+		hairBob.model->savedTopHeadDist.z = -0.980658;		// Value obtained from fixedVertex distance from topHeadCoord
 		
-		float transX = (goldenDiffX + hairBob.model->topHeadCoord.x) - hairBob.model->fixedVertex.x;
-		float transY = (goldenDiffY + hairBob.model->topHeadCoord.y) - hairBob.model->fixedVertex.y;
-		float transZ = (goldenDiffZ + hairBob.model->topHeadCoord.z) - hairBob.model->fixedVertex.z;
+		float transX = (hairBob.model->savedTopHeadDist.x + hairBob.model->topHeadCoord.x) - hairBob.model->fixedVertex.x;
+		float transY = (hairBob.model->savedTopHeadDist.y + hairBob.model->topHeadCoord.y) - hairBob.model->fixedVertex.y;
+		float transZ = (hairBob.model->savedTopHeadDist.z + hairBob.model->topHeadCoord.z) - hairBob.model->fixedVertex.z;
 
 		glm::mat4 translation = glm::translate(glm::mat4(1.f), glm::vec3(transX, transY, transZ));
 		hairObjectModel = translation * hairObjectModel;
@@ -449,8 +362,32 @@ int main()
 		for (size_t i = 0; i < hairObjs.size(); i++)
 		{
 			if (selected == 1) {			// Current selected input controls is Object
-				hairObjs[i].model->Inputs(window, windowWidth, windowHeight, hairObjs[i].model->modelMat); //TODO::remove model parameter
-				hairObjs[i].model->UpdateModel(hairObjs[i].model->modelMat);
+				hairObjs[i].model->Inputs(window, windowWidth, windowHeight); //TODO::remove model parameter
+
+				glm::mat4 newModel = glm::mat4(1.0f);
+
+				// Calculate the scale of the hair object
+				hairObjs[i].model->originalModelWidth = glm::length(hairObjs[i].model->originalBb.max.x - hairObjs[i].model->originalBb.min.x);
+				hairObjs[i].model->originalModelHeight = glm::length(hairObjs[i].model->originalBb.max.y - hairObjs[i].model->originalBb.min.y);
+				float scaleMultWidth = hairObjs[i].model->savedRatioWidth * hairObjs[i].model->faceWidth / hairObjs[i].model->originalModelWidth;
+				float scaleMultHeight = hairObjs[i].model->savedRatioHeight * hairObjs[i].model->faceHeight / hairObjs[i].model->originalModelHeight;
+				newModel = glm::scale(newModel, glm::vec3(scaleMultWidth, scaleMultHeight, hairObjs[i].model->savedScaleZ));	// TODO::Find calculation for Z component
+
+				// Rotate object to match face direction
+				newModel = glm::rotate(newModel, glm::radians(hairObjs[i].model->facePitch + hairObjs[i].model->savedPitch), glm::vec3(1.0f, 0.0f, 0.0f));
+				newModel = glm::rotate(newModel, glm::radians(hairObjs[i].model->faceYaw + hairObjs[i].model->savedYaw), glm::vec3(0.0f, 1.0f, 0.0f));
+				newModel = glm::rotate(newModel, glm::radians(hairObjs[i].model->faceRoll + hairObjs[i].model->savedRoll), glm::vec3(0.0f, 0.0f, 1.0f));
+
+				hairObjs[i].model->UpdateModel(newModel);
+
+				float transX = (hairObjs[i].model->savedTopHeadDist.x + hairObjs[i].model->topHeadCoord.x) - hairObjs[i].model->fixedVertex.x;
+				float transY = (hairObjs[i].model->savedTopHeadDist.y + hairObjs[i].model->topHeadCoord.y) - hairObjs[i].model->fixedVertex.y;
+				float transZ = (hairObjs[i].model->savedTopHeadDist.z + hairObjs[i].model->topHeadCoord.z) - hairObjs[i].model->fixedVertex.z;
+
+				glm::mat4 newtrans = glm::translate(glm::mat4(1.f), glm::vec3(transX, transY, transZ));
+				newModel = newtrans * newModel;
+
+				hairObjs[i].model->UpdateModel(newModel);
 			}
 			hairObjs[i].model->Draw(shaderProgramObj, camera);					// Draw the object
 		}
