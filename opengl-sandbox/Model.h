@@ -34,6 +34,7 @@ public:
 	float originalModelHeight;
 	float modelWidth;
 	float modelHeight;
+	float modelZ;
 
 	// Face Information
 	glm::vec3 topHeadCoord;
@@ -69,6 +70,9 @@ public:
 	// Stores the width and height of the window
 	int windowWidth;
 	int windowHeight;
+
+	// DEBUG VARIABLES
+	int front_head_vertex_index = 0;
 };
 
 #endif

@@ -21,16 +21,19 @@ void Model::UpdateModel(glm::mat4 model)
 {
 	modelMat = model;			// Update the modelMat
 
-	glm::vec4 vertexPoint = glm::vec4(meshes[0].vertices[0].position, 1.0f);
+	glm::vec4 vertexPoint = glm::vec4(meshes[0].vertices[front_head_vertex_index].position, 1.0f);
 	fixedVertex = modelMat * vertexPoint;
 
-	glm::vec4 vmin = modelMat * glm::vec4(originalBb.min,1.0f);
+	glm::vec4 vmin = modelMat * glm::vec4(originalBb.min, 1.0f);
 	bb.min = glm::vec3(vmin.x, vmin.y, vmin.z);
 	glm::vec4 vmax = modelMat * glm::vec4(originalBb.max, 1.0f);
 	bb.max = glm::vec3(vmax.x, vmax.y, vmax.z);
 
 	modelWidth = abs(bb.max.x - bb.min.x);
 	modelHeight = abs(bb.max.y - bb.min.y);
+
+	//glm::vec4 vertexPoint = glm::vec4(bb.max.x - (modelWidth/2.0f), bb.max.y, bb.max.z, 1.0f);
+	//fixedVertex = vertexPoint;
 
 	position = modelMat * glm::vec4(originalPosition,1.0f);
 
@@ -43,8 +46,10 @@ void Model::UpdateModel(glm::mat4 model)
 	printf("bb maximum: {%f, %f, %f}\n", bb.max.x, bb.max.y, bb.max.z);
 	printf("model width: %f\n", modelWidth);
 	printf("model height: %f\n", modelHeight);
+	printf("model Z: %f\n", modelZ);
 	printf("original model width: %f\n", glm::length(originalBb.max.x - originalBb.min.x));
 	printf("original model height: %f\n", glm::length(originalBb.max.y - originalBb.min.y));
+	printf("original model Z: %f\n", glm::length(originalBb.max.z - originalBb.min.z));
 	printf("scaledValueWidth: %f\n", sqrt(model[0][0] * model[0][0] + model[0][1] * model[0][1] + model[0][2] * model[0][2]));
 	printf("scaledValueHeight: %f\n", sqrt(model[1][0] * model[1][0] + model[1][1] * model[1][1] + model[1][2] * model[1][2]));
 	printf("position: {%f, %f, %f}\n", position.x, position.y, position.z);
@@ -56,6 +61,7 @@ void Model::UpdateModel(glm::mat4 model)
 	printf("*SAVE*savedScaleZ: %f\n", sqrt(model[2][0] * model[2][0] + model[2][1] * model[2][1] + model[2][2] * model[2][2]));
 	printf("*SAVE*savedTopHeadDist={%f,%f,%f}\n", fixedVertex.x - topHeadCoord.x, fixedVertex.y - topHeadCoord.y, fixedVertex.z - topHeadCoord.z);
 	printf("*SAVE*savedPitch,savedYaw,savedRoll={%f,%f,%f}\n", savedPitch, savedYaw, savedRoll);
+	printf("*SAVE*front_head_vertex_index={%i}\n", front_head_vertex_index);
 	printf("-------------------------------\n");
 
 }

@@ -24,6 +24,8 @@ uniform vec3 lightPos;
 // Gets the position of the camera from the main function
 uniform vec3 camPos;
 
+uniform vec3 filterColor;
+
 
 vec4 pointLight()
 {	
@@ -57,7 +59,7 @@ vec4 pointLight()
 vec4 direcLight()
 {
 	// ambient lighting
-	float ambient = 0.80f;
+	float ambient = 0.90f;
 
 	// diffuse lighting
 	vec3 normal = normalize(Normal);
@@ -65,13 +67,13 @@ vec4 direcLight()
 	float diffuse = max(dot(normal, lightDirection), 0.0f);
 
 	// specular lighting
-	float specularLight = 0.50f;
+	float specularLight = 0.10f;
 	vec3 viewDirection = normalize(camPos - crntPos);
 	vec3 reflectionDirection = reflect(-lightDirection, normal);
 	float specAmount = pow(max(dot(viewDirection, reflectionDirection), 0.0f), 16);
 	float specular = specAmount * specularLight;
 
-	return (texture(diffuse0, texCoord) * (diffuse + ambient) + texture(specular0, texCoord).r * specular) * lightColor * vec4(color, 1.0f);
+	return (texture(diffuse0, texCoord) * (diffuse + ambient) + texture(specular0, texCoord).r * specular) * lightColor * vec4(color, 1.0f) * vec4(filterColor, 1.0f);
 }
 
 vec4 spotLight()
