@@ -77,6 +77,7 @@ std::vector<FaceDetectObj> FaceDetect::getFaceLandmarks(unsigned char* image, in
 		cv::Mat euler_angle = cv::Mat(3, 1, CV_64FC1);
 
 		std::vector<cv::Point> pts;
+		std::vector<cv::Point> neck_pts;
 		std::vector<cv::Point2d> pose_image_points;
 		cv::Point2d left_brow_left_corner;
 		cv::Point2d left_brow_right_corner;
@@ -127,16 +128,12 @@ std::vector<FaceDetectObj> FaceDetect::getFaceLandmarks(unsigned char* image, in
 				obj.leftHeadPoint = p_transformed;
 			}
 			if (k == 5) {
-				cv::Point p_transformed;
-				p_transformed.x = p.x;
-				p_transformed.y = RESIZED_IMAGE_HEIGHT;
-				pts.push_back(p_transformed);
+				neck_pts.push_back(cv::Point(p.x, p.y));
+				neck_pts.push_back(cv::Point(p.x, RESIZED_IMAGE_HEIGHT));
 			}
 			if (k == 11) {
-				cv::Point p_transformed;
-				p_transformed.x = p.x;
-				p_transformed.y = RESIZED_IMAGE_HEIGHT;
-				pts.push_back(p_transformed);
+				neck_pts.push_back(cv::Point(p.x, p.y));
+				neck_pts.push_back(cv::Point(p.x, RESIZED_IMAGE_HEIGHT));
 			}
 			if (k == 57) {
 				mouth_central_bottom_corner = p;
@@ -183,13 +180,19 @@ std::vector<FaceDetectObj> FaceDetect::getFaceLandmarks(unsigned char* image, in
 			cv::circle(imageMat, p, 5, cv::Scalar(0, 0, 255), cv::FILLED);
 		}
 		std::vector<cv::Point> contour_hull;
+		std::vector<cv::Point> contour_neck_hull;
 		cv::convexHull(pts, contour_hull);
+		cv::convexHull(neck_pts, contour_neck_hull);
 		std::vector<std::vector<cv::Point>> hulls;
 		hulls.push_back(contour_hull);
+		hulls.push_back(contour_neck_hull);
 		cv::drawContours(markers, hulls, 0, cv::Scalar(255),-1);
+		cv::drawContours(markers, hulls, 1, cv::Scalar(255), -1);
+
+		cv::GaussianBlur(markers, markers, cv::Size(3, 3), 11.0);
 
 		//cv::namedWindow("Detected_shape");
-		//cv::imshow("Detected_shape", imageMat);
+		//cv::imshow("Detected_shape", markers);
 		//cv::waitKey(0);
 
 		face_mask_image = markers.data;

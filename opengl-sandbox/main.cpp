@@ -388,8 +388,6 @@ int main()
 		if(enable_front_indx)
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-		maskMesh.Draw(shaderProgramMask, camera, maskModel);
-
 		if(enable_front_indx)
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
@@ -457,6 +455,7 @@ int main()
 				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}
 
+		maskMesh.Draw(shaderProgramMask, camera, maskModel);
 
 		// Swap the back buffer with the front buffer
 		glfwSwapBuffers(window);

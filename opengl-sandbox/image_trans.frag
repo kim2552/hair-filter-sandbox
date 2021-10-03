@@ -29,10 +29,8 @@ void main()
 	vec4 result;
 	result = texture(image,texCoord);
 	float mask = texture(transparency,texCoord).r;
-	if(mask == 0)
-    {
-        discard;
-    }
+//	result.a = (1.0 / 255.0) * mask;
+	result.a = mask;
 	// outputs final color
 	FragColor = result;
 }
