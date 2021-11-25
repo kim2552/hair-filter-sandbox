@@ -42,19 +42,16 @@ public:
 
 	std::vector<FaceDetectObj> getFaceLandmarks(unsigned char* image, int width, int height);
 
-	cv::CascadeClassifier face_cascade;
-	cv::Ptr<cv::face::Facemark> facemark;
+	void setResizedWidth(const int width);
+	int resizedWidth() const;
+	bool isFaceFound() const;
+	cv::Rect face() const;
+	cv::Point facePosition() const;
+	void setTemplateMatchingMaxDuration(const double s);
+	double templateMatchingMaxDuration() const;
 
-	cv::Mat mask;
+	// face mask
 	cv::Mat markers;
-	cv::Mat bgdModel, fgdModel;
-
-	cv::Rect rect;
-	std::vector<cv::Point> fgdPxls, bgdPxls, prFgdPxls, prBgdPxls;
-
-	dlib::shape_predictor shape_predictor;
-	dlib::frontal_face_detector face_detector;
-
 	unsigned char* face_mask_image;
 
 	// Vertices coordinates for face
@@ -170,6 +167,34 @@ public:
 		5, 68, 69,	// Neck
 		11, 5, 69	// Neck
 	};
+
+private:
+	// face stuff
+	cv::CascadeClassifier m_faceCascade;
+	dlib::shape_predictor m_shapePredictor;
+	cv::Ptr<cv::face::Facemark> m_facemark;
+
+	std::vector<cv::Rect>   m_allFaces;
+	cv::Rect                m_trackedFace;
+	cv::Rect                m_faceRoi;
+	cv::Mat                 m_faceTemplate;
+	cv::Mat                 m_matchingResult;
+	bool                    m_templateMatchingRunning = false;
+	int64                   m_templateMatchingStartTime = 0;
+	int64                   m_templateMatchingCurrentTime = 0;
+	bool                    m_foundFace = false;
+	double                  m_scale;
+	int                     m_resizedWidth = 320;
+	cv::Point               m_facePosition;
+	double                  m_templateMatchingMaxDuration = 3;
+
+	cv::Rect    doubleRectSize(const cv::Rect& inputRect, const cv::Rect& frameSize) const;
+	cv::Rect    biggestFace(std::vector<cv::Rect>& faces) const;
+	cv::Point   centerOfRect(const cv::Rect& rect) const;
+	cv::Mat     getFaceTemplate(const cv::Mat& frame, cv::Rect face);
+	void        detectFaceAllSizes(const cv::Mat& frame);
+	void        detectFaceAroundRoi(const cv::Mat& frame);
+	void        detectFacesTemplateMatching(const cv::Mat& frame);
 };
 
 #endif	//FACE_DETECT_H

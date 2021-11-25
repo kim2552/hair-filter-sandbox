@@ -146,7 +146,7 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="opengl-sandbox.rc">
+    <ResourceCompile Include="hair-filter-sandbox.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>

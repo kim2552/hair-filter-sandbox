@@ -29,6 +29,10 @@ void Model::UpdateModel(glm::mat4 model)
 	glm::vec4 vmax = modelMat * glm::vec4(originalBb.max, 1.0f);
 	bb.max = glm::vec3(vmax.x, vmax.y, vmax.z);
 
+	//fixedVertex.x = (bb.max.x - bb.min.x) / 2.0 + bb.min.x;
+	//fixedVertex.y = bb.max.y;
+	//fixedVertex.z = bb.max.z;
+
 	modelWidth = abs(bb.max.x - bb.min.x);
 	modelHeight = abs(bb.max.y - bb.min.y);
 
@@ -44,6 +48,7 @@ void Model::UpdateModel(glm::mat4 model)
 	printf("faceYaw,facePitch,faceRoll={%f,%f,%f}\n", faceYaw, facePitch, faceRoll);
 	printf("bb minimum: {%f, %f, %f}\n", bb.min.x, bb.min.y, bb.min.z);
 	printf("bb maximum: {%f, %f, %f}\n", bb.max.x, bb.max.y, bb.max.z);
+	printf("fixed vertex: {%f, %f, %f}\n", fixedVertex.x, fixedVertex.y, fixedVertex.z);
 	printf("model width: %f\n", modelWidth);
 	printf("model height: %f\n", modelHeight);
 	printf("model Z: %f\n", modelZ);

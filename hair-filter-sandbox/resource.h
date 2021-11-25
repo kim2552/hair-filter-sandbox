@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by opengl-sandbox.rc
+// Used by hair-filter-sandbox.rc
 
 // Next default values for new objects
 // 

@@ -42,7 +42,7 @@ int main()
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	// Create a GLFWwindow object of 800 by 800 pixels, naming it "YoutubeOpenGL"
-	GLFWwindow* window = glfwCreateWindow(windowWidth, windowHeight, "OpenGL-Sandbox", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(windowWidth, windowHeight, "hair-filter-sandbox", NULL, NULL);
 	// Error check if the window fails to create
 	if (window == NULL)
 	{
@@ -88,7 +88,7 @@ int main()
 	Shader shaderProgramPoint("point.vert", "point.frag");
 
 	// Take care of all the light related things
-	glm::vec4 lightColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	glm::vec4 lightColor = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
 	glm::vec3 lightPos = glm::vec3(0.5f, 0.5f, 0.5f);
 
 	// Stores the width, height, and the number of color channels of the image
@@ -111,6 +111,7 @@ int main()
 	std::vector<Mesh> faceDetectMeshes;									// Each face has it's own mesh
 	std::vector<glm::mat4> faceDetectModels;							// Each face has it's own model
 
+	faceObjs = fdetect.getFaceLandmarks(imgBytes, widthImg, heightImg);	// Get faces in image
 	faceObjs = fdetect.getFaceLandmarks(imgBytes, widthImg, heightImg);	// Get faces in image
 
 	Texture faceText[]													// Texture for face detect
@@ -251,11 +252,16 @@ int main()
 		hairBob.model->savedRatioWidth = ratio_width;				// Width ratio value based on developer preference			// TODO::Store values in json file
 		hairBob.model->savedRatioHeight = ratio_height;			// Height ratio value based on developer preference
 		hairBob.model->savedScaleZ = scale_z;				// Constant Z scale value based on developer preference
+
 		hairBob.model->originalModelWidth = glm::length(hairBob.model->originalBb.max.x - hairBob.model->originalBb.min.x);
 		hairBob.model->originalModelHeight = glm::length(hairBob.model->originalBb.max.y - hairBob.model->originalBb.min.y);
 		float scaleMultWidth = hairBob.model->savedRatioWidth * hairBob.model->faceWidth / hairBob.model->originalModelWidth;
 		float scaleMultHeight = hairBob.model->savedRatioHeight * hairBob.model->faceHeight / hairBob.model->originalModelHeight;
 		hairObjectModel = glm::scale(hairObjectModel, glm::vec3(scaleMultWidth, scaleMultHeight, hairBob.model->savedScaleZ));	// TODO::Find calculation for Z component
+
+		hairBob.model->scale.x = ratio_width * hairBob.model->faceWidth / hairBob.model->originalModelWidth;
+		hairBob.model->scale.y = ratio_height * hairBob.model->faceHeight / hairBob.model->originalModelHeight;
+		hairBob.model->scale.z = scale_z;
 
 		// Rotate object to match face direction
 		hairBob.model->facePitch = fom.pitch;
@@ -401,7 +407,7 @@ int main()
 		for (size_t i = 0; i < hairObjs.size(); i++)
 		{
 			if (selected == 1) {			// Current selected input controls is Object
-
+				front_head_indx = hairObjs[i].model->front_head_vertex_index;
 				if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 				{
 					front_head_indx += 1;
@@ -410,6 +416,17 @@ int main()
 				if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 				{
 					front_head_indx -= 1;
+					if (front_head_indx < 0) front_head_indx = 0;
+					hairObjs[i].model->front_head_vertex_index = front_head_indx;
+				}
+				if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+				{
+					front_head_indx += 100;
+					hairObjs[i].model->front_head_vertex_index = front_head_indx;
+				}
+				if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+				{
+					front_head_indx -= 100;
 					if (front_head_indx < 0) front_head_indx = 0;
 					hairObjs[i].model->front_head_vertex_index = front_head_indx;
 				}
