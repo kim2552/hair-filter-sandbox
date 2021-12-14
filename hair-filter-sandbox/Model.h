@@ -1,9 +1,18 @@
 #ifndef MODEL_H_CLASS
 #define MODEL_H_CLASS
 
+#include "Texture.h"
 #include "Mesh.h"
 
 #include "vector"
+
+struct RenderObject
+{
+	Shader* shader;
+	Mesh* mesh;
+	glm::mat4 model;
+	std::vector<Texture>* textures;
+};
 
 struct BoundingBox
 {
