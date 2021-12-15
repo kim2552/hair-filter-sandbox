@@ -16,6 +16,7 @@ public:
 	void loadTextures(std::vector<Texture>* textureCameraImage);
 	void loadShaders(Shader* shaderCameraImage);
 	void initHairObject(FaceMask* faceMask, AppConfig* appConfig);
+	void updateHairObject();
 	void drawHairObject(Camera camera);
 
 	RenderObject m_hairRenderObj;

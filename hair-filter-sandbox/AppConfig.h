@@ -10,9 +10,10 @@
 struct Parameters
 {
 	std::string face_image;
+	std::string hair_selection;
 	std::string hair_texture;
 	std::string hair_obj;
-	int enable_front_indx;
+	int enable_wireframe;
 	float ratio_width;
 	float ratio_height;
 	float scale_z;

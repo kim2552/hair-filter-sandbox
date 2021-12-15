@@ -155,6 +155,7 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CameraImage.cpp" />
     <ClCompile Include="D:\sdks\dlib\dlib\all\source.cpp" />
+    <ClCompile Include="DebugImage.cpp" />
     <ClCompile Include="EBO.cpp" />
     <ClCompile Include="FaceDetect.cpp" />
     <ClCompile Include="FaceMask.cpp" />
@@ -185,6 +186,7 @@
     <ClInclude Include="AppConfig.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CameraImage.h" />
+    <ClInclude Include="DebugImage.h" />
     <ClInclude Include="EBO.h" />
     <ClInclude Include="FaceDetect.h" />
     <ClInclude Include="FaceMask.h" />

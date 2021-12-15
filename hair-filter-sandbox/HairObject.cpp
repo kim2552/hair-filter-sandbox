@@ -85,3 +85,31 @@ void HairObject::initHairObject(FaceMask* faceMask, AppConfig* appConfig)
 	glUniform3f(glGetUniformLocation(m_hairRenderObj.shader->ID, "filterColor"), 1, 1, 1);
 	m_hairModelObj->model->UpdateModel(hairObjectModel);																// Update object model
 }
+
+void HairObject::updateHairObject()
+{
+	glm::mat4 newModel = glm::mat4(1.0f);
+
+	// Calculate the scale of the hair object
+	m_hairModelObj->model->originalModelWidth = glm::length(m_hairModelObj->model->originalBb.max.x - m_hairModelObj->model->originalBb.min.x);
+	m_hairModelObj->model->originalModelHeight = glm::length(m_hairModelObj->model->originalBb.max.y - m_hairModelObj->model->originalBb.min.y);
+	float scaleMultWidth = m_hairModelObj->model->savedRatioWidth * m_hairModelObj->model->faceWidth / m_hairModelObj->model->originalModelWidth;
+	float scaleMultHeight = m_hairModelObj->model->savedRatioHeight * m_hairModelObj->model->faceHeight / m_hairModelObj->model->originalModelHeight;
+	newModel = glm::scale(newModel, glm::vec3(scaleMultWidth, scaleMultHeight, m_hairModelObj->model->savedScaleZ));	// TODO::Find calculation for Z component
+
+	// Rotate object to match face direction
+	newModel = glm::rotate(newModel, glm::radians(m_hairModelObj->model->facePitch + m_hairModelObj->model->savedPitch), glm::vec3(1.0f, 0.0f, 0.0f));
+	newModel = glm::rotate(newModel, glm::radians(m_hairModelObj->model->faceYaw + m_hairModelObj->model->savedYaw), glm::vec3(0.0f, 1.0f, 0.0f));
+	newModel = glm::rotate(newModel, glm::radians(m_hairModelObj->model->faceRoll + m_hairModelObj->model->savedRoll), glm::vec3(0.0f, 0.0f, 1.0f));
+
+	m_hairModelObj->model->UpdateModel(newModel);
+
+	float transX = (m_hairModelObj->model->savedTopHeadDist.x + m_hairModelObj->model->topHeadCoord.x) - m_hairModelObj->model->fixedVertex.x;
+	float transY = (m_hairModelObj->model->savedTopHeadDist.y + m_hairModelObj->model->topHeadCoord.y) - m_hairModelObj->model->fixedVertex.y;
+	float transZ = (m_hairModelObj->model->savedTopHeadDist.z + m_hairModelObj->model->topHeadCoord.z) - m_hairModelObj->model->fixedVertex.z;
+
+	glm::mat4 newtrans = glm::translate(glm::mat4(1.f), glm::vec3(transX, transY, transZ));
+	newModel = newtrans * newModel;
+
+	m_hairModelObj->model->UpdateModel(newModel);
+}
