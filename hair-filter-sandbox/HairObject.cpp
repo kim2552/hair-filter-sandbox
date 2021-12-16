@@ -37,7 +37,7 @@ void HairObject::initHairObject(FaceMask* faceMask, AppConfig* appConfig)
 	m_hairModelObj->model->front_head_vertex_index = appConfig->params.front_vert_index;
 
 	// Calculate the scale of the hair object
-	m_hairModelObj->model->savedRatioWidth = appConfig->params.ratio_width;				// Width ratio value based on developer preference			// TODO::Store values in json file
+	m_hairModelObj->model->savedRatioWidth = appConfig->params.ratio_width;				// Width ratio value based on developer preference
 	m_hairModelObj->model->savedRatioHeight = appConfig->params.ratio_height;			// Height ratio value based on developer preference
 	m_hairModelObj->model->savedScaleZ = appConfig->params.scale_z;				// Constant Z scale value based on developer preference
 
@@ -45,11 +45,11 @@ void HairObject::initHairObject(FaceMask* faceMask, AppConfig* appConfig)
 	m_hairModelObj->model->originalModelHeight = glm::length(m_hairModelObj->model->originalBb.max.y - m_hairModelObj->model->originalBb.min.y);
 	float scaleMultWidth = m_hairModelObj->model->savedRatioWidth * m_hairModelObj->model->faceWidth / m_hairModelObj->model->originalModelWidth;
 	float scaleMultHeight = m_hairModelObj->model->savedRatioHeight * m_hairModelObj->model->faceHeight / m_hairModelObj->model->originalModelHeight;
-	hairObjectModel = glm::scale(hairObjectModel, glm::vec3(scaleMultWidth, scaleMultHeight, m_hairModelObj->model->savedScaleZ));	// TODO::Find calculation for Z component
+	hairObjectModel = glm::scale(hairObjectModel, glm::vec3(scaleMultWidth, scaleMultHeight, m_hairModelObj->model->savedScaleZ));
 
 	m_hairModelObj->model->scale.x = appConfig->params.ratio_width * m_hairModelObj->model->faceWidth / m_hairModelObj->model->originalModelWidth;
 	m_hairModelObj->model->scale.y = appConfig->params.ratio_height * m_hairModelObj->model->faceHeight / m_hairModelObj->model->originalModelHeight;
-	m_hairModelObj->model->scale.z = appConfig->params.scale_z;
+	m_hairModelObj->model->scale.z = m_hairModelObj->model->scale.y * (7.0f/8.0f);
 
 	// Rotate object to match face direction
 	m_hairModelObj->model->facePitch = faceMask->m_faceDetectObj.pitch;
@@ -65,7 +65,7 @@ void HairObject::initHairObject(FaceMask* faceMask, AppConfig* appConfig)
 
 	m_hairModelObj->model->UpdateModel(hairObjectModel);
 
-	m_hairModelObj->model->savedTopHeadDist.x = appConfig->params.topheadx;		// Value obtained from fixedVertex distance from topHeadCoord	#TODO::Save values in a json file and retrieve it
+	m_hairModelObj->model->savedTopHeadDist.x = appConfig->params.topheadx;		// Value obtained from fixedVertex distance from topHeadCoord
 	m_hairModelObj->model->savedTopHeadDist.y = appConfig->params.topheady;		// Value obtained from fixedVertex distance from topHeadCoord
 	m_hairModelObj->model->savedTopHeadDist.z = appConfig->params.topheadz;		// Value obtained from fixedVertex distance from topHeadCoord
 
@@ -95,7 +95,7 @@ void HairObject::updateHairObject()
 	m_hairModelObj->model->originalModelHeight = glm::length(m_hairModelObj->model->originalBb.max.y - m_hairModelObj->model->originalBb.min.y);
 	float scaleMultWidth = m_hairModelObj->model->savedRatioWidth * m_hairModelObj->model->faceWidth / m_hairModelObj->model->originalModelWidth;
 	float scaleMultHeight = m_hairModelObj->model->savedRatioHeight * m_hairModelObj->model->faceHeight / m_hairModelObj->model->originalModelHeight;
-	newModel = glm::scale(newModel, glm::vec3(scaleMultWidth, scaleMultHeight, m_hairModelObj->model->savedScaleZ));	// TODO::Find calculation for Z component
+	newModel = glm::scale(newModel, glm::vec3(scaleMultWidth, scaleMultHeight, m_hairModelObj->model->savedScaleZ));
 
 	// Rotate object to match face direction
 	newModel = glm::rotate(newModel, glm::radians(m_hairModelObj->model->facePitch + m_hairModelObj->model->savedPitch), glm::vec3(1.0f, 0.0f, 0.0f));

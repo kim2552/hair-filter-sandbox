@@ -43,7 +43,7 @@ public:
 	float originalModelHeight;
 	float modelWidth;
 	float modelHeight;
-	float modelZ;
+	float modelLength;
 
 	// Face Information
 	glm::vec3 topHeadCoord;

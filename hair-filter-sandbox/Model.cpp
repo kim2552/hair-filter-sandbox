@@ -29,15 +29,9 @@ void Model::UpdateModel(glm::mat4 model)
 	glm::vec4 vmax = modelMat * glm::vec4(originalBb.max, 1.0f);
 	bb.max = glm::vec3(vmax.x, vmax.y, vmax.z);
 
-	//fixedVertex.x = (bb.max.x - bb.min.x) / 2.0 + bb.min.x;
-	//fixedVertex.y = bb.max.y;
-	//fixedVertex.z = bb.max.z;
-
 	modelWidth = abs(bb.max.x - bb.min.x);
 	modelHeight = abs(bb.max.y - bb.min.y);
-
-	//glm::vec4 vertexPoint = glm::vec4(bb.max.x - (modelWidth/2.0f), bb.max.y, bb.max.z, 1.0f);
-	//fixedVertex = vertexPoint;
+	modelLength = abs(bb.max.z - bb.min.z);
 
 	position = modelMat * glm::vec4(originalPosition,1.0f);
 
@@ -51,7 +45,7 @@ void Model::UpdateModel(glm::mat4 model)
 	printf("fixed vertex: {%f, %f, %f}\n", fixedVertex.x, fixedVertex.y, fixedVertex.z);
 	printf("model width: %f\n", modelWidth);
 	printf("model height: %f\n", modelHeight);
-	printf("model Z: %f\n", modelZ);
+	printf("model Z: %f\n", modelLength);
 	printf("original model width: %f\n", glm::length(originalBb.max.x - originalBb.min.x));
 	printf("original model height: %f\n", glm::length(originalBb.max.y - originalBb.min.y));
 	printf("original model Z: %f\n", glm::length(originalBb.max.z - originalBb.min.z));
@@ -103,6 +97,7 @@ void Model::Inputs(GLFWwindow* window, int width, int height)
 		scale += glm::vec3(0.001);
 		savedRatioWidth = scale.x * originalModelWidth / faceWidth;
 		savedRatioHeight = scale.y * originalModelHeight / faceHeight;
+		scale.z = scale.y * (7.0f / 8.0f);
 		savedScaleZ = scale.z;
 	}
 	if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS)
@@ -110,6 +105,7 @@ void Model::Inputs(GLFWwindow* window, int width, int height)
 		scale += glm::vec3(-0.001);
 		savedRatioWidth = scale.x * originalModelWidth / faceWidth;
 		savedRatioHeight = scale.y * originalModelHeight / faceHeight;
+		scale.z = scale.y * (7.0f / 8.0f);
 		savedScaleZ = scale.z;
 	}
 	if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
@@ -126,11 +122,15 @@ void Model::Inputs(GLFWwindow* window, int width, int height)
 	{
 		scale.y += 0.001;
 		savedRatioHeight = scale.y * originalModelHeight / faceHeight;
+		scale.z = scale.y * (7.0f / 8.0f);
+		savedScaleZ = scale.z;
 	}
 	if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS)
 	{
 		scale.y += -0.001;
 		savedRatioHeight = scale.y * originalModelHeight / faceHeight;
+		scale.z = scale.y * (7.0f/8.0f);
+		savedScaleZ = scale.z;
 	}
 	if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS)
 	{

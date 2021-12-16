@@ -74,7 +74,7 @@ int main()
 	//stbi_set_flip_vertically_on_load(true);
 
 	// Reads the image from a file and stores it in bytes
-	unsigned char* imgBytes = stbi_load(config.params.face_image.c_str(), &widthImg, &heightImg, &numColCh, 0);	//TODO::Replace this with live camera feed images
+	unsigned char* imgBytes = stbi_load(config.params.face_image.c_str(), &widthImg, &heightImg, &numColCh, 0);
 
 	float imageAspectRatio = (float)widthImg / (float)heightImg;
 

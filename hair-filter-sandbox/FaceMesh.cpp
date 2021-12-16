@@ -38,7 +38,7 @@ eos::core::LandmarkCollection<Eigen::Vector2f> FaceMesh::processLandmarks(std::v
 
 		landmark.name = std::to_string(ibugId);
 		landmark.coordinates[0] = face[i].x;
-		landmark.coordinates[1] = face[i].y;	//TODO::Might have to shift by 1.0f
+		landmark.coordinates[1] = face[i].y;
 		landmarks.emplace_back(landmark);
 		++ibugId;
 	}
