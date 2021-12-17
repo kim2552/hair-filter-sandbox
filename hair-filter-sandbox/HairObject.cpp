@@ -100,5 +100,5 @@ void HairObject::updateHairObject(FaceMask* faceMask, bool modify_size)
 	glm::mat4 newtrans = glm::translate(glm::mat4(1.f), glm::vec3(transX, transY, transZ));
 	hairObjectModel = newtrans * hairObjectModel;
 
-	m_hairModelObj->model->UpdateModel(hairObjectModel);
+	m_hairModelObj->model->UpdateModel(hairObjectModel,true);
 }

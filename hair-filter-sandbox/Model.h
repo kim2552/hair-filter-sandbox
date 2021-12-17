@@ -29,7 +29,7 @@ public:
 	void Draw(Shader& shader, Camera& camera);
 
 	// Updates the model matrix
-	void UpdateModel(glm::mat4 model);
+	void UpdateModel(glm::mat4 model, bool print_log=false);
 
 	// Handles object controls
 	void Inputs(GLFWwindow* window, int width, int height);
@@ -45,7 +45,6 @@ public:
 	float modelWidth;
 	float modelHeight;
 	float modelLength;
-	glm::vec3 modelCenter;
 
 	// Face Information
 	glm::vec3 topHeadCoord;

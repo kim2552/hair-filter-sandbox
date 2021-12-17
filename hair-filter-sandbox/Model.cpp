@@ -17,7 +17,7 @@ void Model::Draw(Shader& shader, Camera& camera)
 	}
 }
 
-void Model::UpdateModel(glm::mat4 model)
+void Model::UpdateModel(glm::mat4 model, bool print_log)
 {
 	modelMat = model;			// Update the modelMat
 
@@ -32,39 +32,44 @@ void Model::UpdateModel(glm::mat4 model)
 	modelWidth = abs(bb.max.x - bb.min.x);
 	modelHeight = abs(bb.max.y - bb.min.y);
 	modelLength = abs(bb.max.z - bb.min.z);
-	modelCenter = glm::vec3((modelWidth / 2.0f) + bb.min.x, (modelHeight / 2.0f) + bb.min.y, (modelLength / 2.0f) + bb.min.z);
 
 	position = modelMat * glm::vec4(originalPosition,1.0f);
 
-	printf("--------Model Properties-----------\n");
-	printf("topHeadCoord={%f,%f,%f}\n", topHeadCoord.x, topHeadCoord.y, topHeadCoord.z);
-	printf("faceWidth=%f\n", faceWidth);
-	printf("faceHeight=%f\n", faceHeight);
-	printf("faceYaw,facePitch,faceRoll={%f,%f,%f}\n", faceYaw, facePitch, faceRoll);
-	printf("bb minimum: {%f, %f, %f}\n", bb.min.x, bb.min.y, bb.min.z);
-	printf("bb maximum: {%f, %f, %f}\n", bb.max.x, bb.max.y, bb.max.z);
-	printf("fixed vertex: {%f, %f, %f}\n", fixedVertex.x, fixedVertex.y, fixedVertex.z);
-	printf("model width: %f\n", modelWidth);
-	printf("model height: %f\n", modelHeight);
-	printf("model length: %f\n", modelLength);
-	printf("model center: {%f, %f, %f}\n", modelCenter.x, modelCenter.y, modelCenter.z);
-	printf("original model width: %f\n", glm::length(originalBb.max.x - originalBb.min.x));
-	printf("original model height: %f\n", glm::length(originalBb.max.y - originalBb.min.y));
-	printf("original model Z: %f\n", glm::length(originalBb.max.z - originalBb.min.z));
-	printf("scaledValueWidth: %f\n", sqrt(model[0][0] * model[0][0] + model[0][1] * model[0][1] + model[0][2] * model[0][2]));
-	printf("scaledValueHeight: %f\n", sqrt(model[1][0] * model[1][0] + model[1][1] * model[1][1] + model[1][2] * model[1][2]));
-	printf("position: {%f, %f, %f}\n", position.x, position.y, position.z);
-	printf("ratio object to face width: %f\n", modelWidth / faceWidth);
-	printf("ratio object to face height: %f\n", modelHeight / faceHeight);
-	printf("position distance from topHeadCoord={%f,%f,%f}\n", position.x - topHeadCoord.x, position.y - topHeadCoord.y, position.z - topHeadCoord.z);
-	printf("*SAVE*savedRatioWidth: %f\n", sqrt(model[0][0] * model[0][0] + model[0][1] * model[0][1] + model[0][2] * model[0][2]) * glm::length(originalBb.max.x - originalBb.min.x) / faceWidth);
-	printf("*SAVE*savedRatioHeight: %f\n", sqrt(model[1][0] * model[1][0] + model[1][1] * model[1][1] + model[1][2] * model[1][2]) * glm::length(originalBb.max.y - originalBb.min.y) / faceHeight);
-	printf("*SAVE*savedRatioLength: %f\n", sqrt(model[2][0] * model[2][0] + model[2][1] * model[2][1] + model[2][2] * model[2][2]) * glm::length(originalBb.max.z - originalBb.min.z) / faceLength);
-	printf("*SAVE*savedTopHeadDist={%f,%f,%f}\n", fixedVertex.x - topHeadCoord.x, fixedVertex.y - topHeadCoord.y, fixedVertex.z - topHeadCoord.z);
-	printf("*SAVE*savedPitch,savedYaw,savedRoll={%f,%f,%f}\n", savedPitch, savedYaw, savedRoll);
-	printf("*SAVE*front_head_vertex_index={%i}\n", front_head_vertex_index);
-	printf("-------------------------------\n");
-
+	if (print_log) {
+		printf("--------Model Properties-----------\n");
+		printf("topHeadCoord={%f,%f,%f}\n", topHeadCoord.x, topHeadCoord.y, topHeadCoord.z);
+		printf("faceWidth=%f\n", faceWidth);
+		printf("faceHeight=%f\n", faceHeight);
+		printf("faceYaw,facePitch,faceRoll={%f,%f,%f}\n", faceYaw, facePitch, faceRoll);
+		printf("bb minimum: {%f, %f, %f}\n", bb.min.x, bb.min.y, bb.min.z);
+		printf("bb maximum: {%f, %f, %f}\n", bb.max.x, bb.max.y, bb.max.z);
+		printf("fixed vertex: {%f, %f, %f}\n", fixedVertex.x, fixedVertex.y, fixedVertex.z);
+		printf("model width: %f\n", modelWidth);
+		printf("model height: %f\n", modelHeight);
+		printf("model length: %f\n", modelLength);
+		printf("original model width: %f\n", glm::length(originalBb.max.x - originalBb.min.x));
+		printf("original model height: %f\n", glm::length(originalBb.max.y - originalBb.min.y));
+		printf("original model Z: %f\n", glm::length(originalBb.max.z - originalBb.min.z));
+		printf("scaledValueWidth: %f\n", sqrt(model[0][0] * model[0][0] + model[0][1] * model[0][1] + model[0][2] * model[0][2]));
+		printf("scaledValueHeight: %f\n", sqrt(model[1][0] * model[1][0] + model[1][1] * model[1][1] + model[1][2] * model[1][2]));
+		printf("position: {%f, %f, %f}\n", position.x, position.y, position.z);
+		printf("ratio object to face width: %f\n", modelWidth / faceWidth);
+		printf("ratio object to face height: %f\n", modelHeight / faceHeight);
+		printf("position distance from topHeadCoord={%f,%f,%f}\n", position.x - topHeadCoord.x, position.y - topHeadCoord.y, position.z - topHeadCoord.z);
+		printf("-------------------------------\n");
+		printf("--------Save Configuration--------\n");
+		printf("\"ratio_width\": %f,\n", sqrt(model[0][0] * model[0][0] + model[0][1] * model[0][1] + model[0][2] * model[0][2]) * glm::length(originalBb.max.x - originalBb.min.x) / faceWidth);
+		printf("\"ratio_height\": %f,\n", sqrt(model[1][0] * model[1][0] + model[1][1] * model[1][1] + model[1][2] * model[1][2]) * glm::length(originalBb.max.y - originalBb.min.y) / faceHeight);
+		printf("\"ratio_length\": %f,\n", sqrt(model[2][0] * model[2][0] + model[2][1] * model[2][1] + model[2][2] * model[2][2]) * glm::length(originalBb.max.z - originalBb.min.z) / faceLength);
+		printf("\"pitch\": %f,\n", savedPitch);
+		printf("\"yaw\": %f,\n", savedYaw);
+		printf("\"roll\": %f,\n", savedRoll);
+		printf("\"topheadx\": %f,\n", fixedVertex.x - topHeadCoord.x);
+		printf("\"topheady\": %f,\n", fixedVertex.y - topHeadCoord.y);
+		printf("\"topheadz\": %f,\n", fixedVertex.z - topHeadCoord.z);
+		printf("\"front_vert_index\": %i\n", front_head_vertex_index);
+		printf("-------------------------------\n");
+	}
 }
 
 void Model::Inputs(GLFWwindow* window, int width, int height)
