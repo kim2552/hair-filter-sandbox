@@ -41,14 +41,17 @@ public:
 	// Model Information
 	float originalModelWidth;
 	float originalModelHeight;
+	float originalModelLength;
 	float modelWidth;
 	float modelHeight;
 	float modelLength;
+	glm::vec3 modelCenter;
 
 	// Face Information
 	glm::vec3 topHeadCoord;
 	float faceWidth;
 	float faceHeight;
+	float faceLength;
 	float faceRoll;
 	float facePitch;
 	float faceYaw;
@@ -57,7 +60,7 @@ public:
 	glm::vec3 savedTopHeadDist;	// distance of object from top point in head
 	float savedRatioWidth;		// ratio of width between face and object
 	float savedRatioHeight;		// ratio of height between face and object
-	float savedScaleZ;			// scale value for Z coordinate
+	float savedRatioLength;		// ratio of length between face and object
 	float savedYaw;				// yaw
 	float savedPitch;			// pitch
 	float savedRoll;			// roll

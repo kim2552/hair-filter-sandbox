@@ -16,7 +16,7 @@ struct Parameters
 	int enable_wireframe;
 	float ratio_width;
 	float ratio_height;
-	float scale_z;
+	float ratio_length;
 	float pitch;
 	float yaw;
 	float roll;

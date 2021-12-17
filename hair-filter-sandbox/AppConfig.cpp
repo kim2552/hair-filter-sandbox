@@ -14,7 +14,7 @@ void AppConfig::LoadConfig(std::string file_path)
 	params.hair_texture = assets_path+std::string(configsJSON["hairs"][params.hair_selection]["texture"]);
 	params.ratio_width = configsJSON["hairs"][params.hair_selection]["transformations"]["ratio_width"];
 	params.ratio_height = configsJSON["hairs"][params.hair_selection]["transformations"]["ratio_height"];
-	params.scale_z = configsJSON["hairs"][params.hair_selection]["transformations"]["scale_z"];
+	params.ratio_length = configsJSON["hairs"][params.hair_selection]["transformations"]["ratio_length"];
 	params.pitch = configsJSON["hairs"][params.hair_selection]["transformations"]["pitch"];
 	params.yaw = configsJSON["hairs"][params.hair_selection]["transformations"]["yaw"];
 	params.roll = configsJSON["hairs"][params.hair_selection]["transformations"]["roll"];

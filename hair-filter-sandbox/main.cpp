@@ -131,7 +131,8 @@ int main()
 	hairObject.loadImageAspectRatio(imageAspectRatio);
 	hairObject.loadShaders(&shaderProgramHairObject);
 	hairObject.loadTextures(&textureHairObject);
-	hairObject.initHairObject(&faceMask, &config);
+	hairObject.initHairObject(&config);
+	hairObject.updateHairObject(&faceMask);
 
 	/*************************************************************/
 
@@ -244,7 +245,7 @@ int main()
 			hairObject.m_hairModelObj->model->Inputs(window, WINDOW_WIDTH, WINDOW_HEIGHT);
 
 			// Update the hairObject model
-			hairObject.updateHairObject();
+			hairObject.updateHairObject(&faceMask, true);
 
 			// Update the debugImage model
 			debugImage.updateDebugImage(hairObject.m_hairModelObj->model);

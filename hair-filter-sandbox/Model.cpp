@@ -32,6 +32,7 @@ void Model::UpdateModel(glm::mat4 model)
 	modelWidth = abs(bb.max.x - bb.min.x);
 	modelHeight = abs(bb.max.y - bb.min.y);
 	modelLength = abs(bb.max.z - bb.min.z);
+	modelCenter = glm::vec3((modelWidth / 2.0f) + bb.min.x, (modelHeight / 2.0f) + bb.min.y, (modelLength / 2.0f) + bb.min.z);
 
 	position = modelMat * glm::vec4(originalPosition,1.0f);
 
@@ -45,7 +46,8 @@ void Model::UpdateModel(glm::mat4 model)
 	printf("fixed vertex: {%f, %f, %f}\n", fixedVertex.x, fixedVertex.y, fixedVertex.z);
 	printf("model width: %f\n", modelWidth);
 	printf("model height: %f\n", modelHeight);
-	printf("model Z: %f\n", modelLength);
+	printf("model length: %f\n", modelLength);
+	printf("model center: {%f, %f, %f}\n", modelCenter.x, modelCenter.y, modelCenter.z);
 	printf("original model width: %f\n", glm::length(originalBb.max.x - originalBb.min.x));
 	printf("original model height: %f\n", glm::length(originalBb.max.y - originalBb.min.y));
 	printf("original model Z: %f\n", glm::length(originalBb.max.z - originalBb.min.z));
@@ -57,7 +59,7 @@ void Model::UpdateModel(glm::mat4 model)
 	printf("position distance from topHeadCoord={%f,%f,%f}\n", position.x - topHeadCoord.x, position.y - topHeadCoord.y, position.z - topHeadCoord.z);
 	printf("*SAVE*savedRatioWidth: %f\n", sqrt(model[0][0] * model[0][0] + model[0][1] * model[0][1] + model[0][2] * model[0][2]) * glm::length(originalBb.max.x - originalBb.min.x) / faceWidth);
 	printf("*SAVE*savedRatioHeight: %f\n", sqrt(model[1][0] * model[1][0] + model[1][1] * model[1][1] + model[1][2] * model[1][2]) * glm::length(originalBb.max.y - originalBb.min.y) / faceHeight);
-	printf("*SAVE*savedScaleZ: %f\n", sqrt(model[2][0] * model[2][0] + model[2][1] * model[2][1] + model[2][2] * model[2][2]));
+	printf("*SAVE*savedRatioLength: %f\n", sqrt(model[2][0] * model[2][0] + model[2][1] * model[2][1] + model[2][2] * model[2][2]) * glm::length(originalBb.max.z - originalBb.min.z) / faceLength);
 	printf("*SAVE*savedTopHeadDist={%f,%f,%f}\n", fixedVertex.x - topHeadCoord.x, fixedVertex.y - topHeadCoord.y, fixedVertex.z - topHeadCoord.z);
 	printf("*SAVE*savedPitch,savedYaw,savedRoll={%f,%f,%f}\n", savedPitch, savedYaw, savedRoll);
 	printf("*SAVE*front_head_vertex_index={%i}\n", front_head_vertex_index);
@@ -97,16 +99,14 @@ void Model::Inputs(GLFWwindow* window, int width, int height)
 		scale += glm::vec3(0.001);
 		savedRatioWidth = scale.x * originalModelWidth / faceWidth;
 		savedRatioHeight = scale.y * originalModelHeight / faceHeight;
-		scale.z = scale.y * (7.0f / 8.0f);
-		savedScaleZ = scale.z;
+		savedRatioLength = scale.z * originalModelLength / faceLength;
 	}
 	if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS)
 	{
 		scale += glm::vec3(-0.001);
 		savedRatioWidth = scale.x * originalModelWidth / faceWidth;
 		savedRatioHeight = scale.y * originalModelHeight / faceHeight;
-		scale.z = scale.y * (7.0f / 8.0f);
-		savedScaleZ = scale.z;
+		savedRatioLength = scale.z * originalModelLength / faceLength;
 	}
 	if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
 	{
@@ -122,25 +122,21 @@ void Model::Inputs(GLFWwindow* window, int width, int height)
 	{
 		scale.y += 0.001;
 		savedRatioHeight = scale.y * originalModelHeight / faceHeight;
-		scale.z = scale.y * (7.0f / 8.0f);
-		savedScaleZ = scale.z;
 	}
 	if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS)
 	{
 		scale.y += -0.001;
 		savedRatioHeight = scale.y * originalModelHeight / faceHeight;
-		scale.z = scale.y * (7.0f/8.0f);
-		savedScaleZ = scale.z;
 	}
 	if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS)
 	{
 		scale.z += 0.001;
-		savedScaleZ = scale.z;
+		savedRatioLength = scale.z * originalModelLength / faceLength;
 	}
 	if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS)
 	{
 		scale.z += -0.001;
-		savedScaleZ = scale.z;
+		savedRatioLength = scale.z * originalModelLength / faceLength;
 	}
 	if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS)
 	{

@@ -15,8 +15,8 @@ public:
 	void loadImageAspectRatio(float imageAspectRatio);
 	void loadTextures(std::vector<Texture>* textureCameraImage);
 	void loadShaders(Shader* shaderCameraImage);
-	void initHairObject(FaceMask* faceMask, AppConfig* appConfig);
-	void updateHairObject();
+	void initHairObject(AppConfig* appConfig);
+	void updateHairObject(FaceMask* faceMask, bool modify_size = false);
 	void drawHairObject(Camera camera);
 
 	RenderObject m_hairRenderObj;
