@@ -31,6 +31,11 @@ void Camera::Matrix(Shader& shader, const char* uniform)
 void Camera::Inputs(GLFWwindow* window)
 {
 	// Handles key inputs
+	if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
+	{
+		Position = glm::vec3(0.0f, 0.0f, 2.5f);
+		Orientation = glm::vec3(0.0f, 0.0f, -1.0f);
+	}
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 	{
 		Position += speed * Orientation;

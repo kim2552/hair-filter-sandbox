@@ -86,7 +86,7 @@ void HairObject::updateHairObject(FaceMask* faceMask, bool modify_size)
 
 	// Rotate object to match face direction
 	hairObjectModel = glm::rotate(hairObjectModel, glm::radians(m_hairModelObj->model->facePitch + m_hairModelObj->model->savedPitch), glm::vec3(1.0f, 0.0f, 0.0f));
-	hairObjectModel = glm::rotate(hairObjectModel, glm::radians(m_hairModelObj->model->faceYaw + m_hairModelObj->model->savedYaw), glm::vec3(0.0f, 1.0f, 0.0f));
+	hairObjectModel = glm::rotate(hairObjectModel, glm::radians(-m_hairModelObj->model->faceYaw + m_hairModelObj->model->savedYaw), glm::vec3(0.0f, 1.0f, 0.0f));
 	hairObjectModel = glm::rotate(hairObjectModel, glm::radians(m_hairModelObj->model->faceRoll + m_hairModelObj->model->savedRoll), glm::vec3(0.0f, 0.0f, 1.0f));
 
 	// Update the size and rotation of the model first

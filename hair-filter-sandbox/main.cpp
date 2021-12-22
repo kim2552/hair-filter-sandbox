@@ -159,7 +159,6 @@ int main()
 
 	// Enables the Depth Buffer
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	// Draw in wireframe polygons
@@ -258,9 +257,9 @@ int main()
 
 		if(config.params.enable_wireframe)
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
+		glEnable(GL_BLEND);
 		faceMask.drawMaskImage(camera);
-
+		glDisable(GL_BLEND);
 		// Swap the back buffer with the front buffer
 		glfwSwapBuffers(window);
 		// Take care of all GLFW events
