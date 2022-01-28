@@ -40,6 +40,7 @@ void Model::UpdateModel(glm::mat4 model, bool print_log)
 		printf("topHeadCoord={%f,%f,%f}\n", topHeadCoord.x, topHeadCoord.y, topHeadCoord.z);
 		printf("faceWidth=%f\n", faceWidth);
 		printf("faceHeight=%f\n", faceHeight);
+		printf("faceLength=%f\n", faceLength);
 		printf("faceYaw,facePitch,faceRoll={%f,%f,%f}\n", faceYaw, facePitch, faceRoll);
 		printf("bb minimum: {%f, %f, %f}\n", bb.min.x, bb.min.y, bb.min.z);
 		printf("bb maximum: {%f, %f, %f}\n", bb.max.x, bb.max.y, bb.max.z);
@@ -64,6 +65,9 @@ void Model::UpdateModel(glm::mat4 model, bool print_log)
 		printf("\"pitch\": %f,\n", savedPitch);
 		printf("\"yaw\": %f,\n", savedYaw);
 		printf("\"roll\": %f,\n", savedRoll);
+		//printf("\"w_ratio\": %f,\n", (bb.max.x - topHeadCoord.x) / modelWidth);
+		//printf("\"h_ratio\": %f,\n", (bb.max.y - topHeadCoord.y) / modelHeight);
+		//printf("\"l_ratio\": %f,\n", (bb.max.z - topHeadCoord.z) / modelLength);
 		printf("\"topheadx\": %f,\n", fixedVertex.x - topHeadCoord.x);
 		printf("\"topheady\": %f,\n", fixedVertex.y - topHeadCoord.y);
 		printf("\"topheadz\": %f,\n", fixedVertex.z - topHeadCoord.z);
