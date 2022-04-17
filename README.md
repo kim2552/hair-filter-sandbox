@@ -1,5 +1,5 @@
 # hair-filter-sandbox
-Sandbox project for a hair-filter application.
+Sandbox project for a [hair-filter application](https://github.com/kim2552/hair-filter-app).
 
 We can add hair filters to images of people by rendering 3D hair models in the image and placing it on the person's head.
 
